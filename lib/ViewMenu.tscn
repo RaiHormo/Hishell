@@ -1,0 +1,52 @@
+[gd_scene load_steps=2 format=3 uid="uid://decpusnoqjmfc"]
+
+[ext_resource type="Script" uid="uid://dlqtt27645lnf" path="res://lib/view_menu.gd" id="1_puvff"]
+
+[node name="ViewMenu" type="Button"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1005.0
+offset_bottom = -681.0
+grow_horizontal = 2
+grow_vertical = 2
+toggle_mode = true
+action_mode = 0
+text = "View"
+script = ExtResource("1_puvff")
+
+[node name="Dropdown" type="PanelContainer" parent="."]
+layout_mode = 0
+offset_top = 57.0
+offset_right = 201.0
+offset_bottom = 162.0
+
+[node name="List" type="VBoxContainer" parent="Dropdown"]
+layout_mode = 2
+
+[node name="Maximize" type="Button" parent="Dropdown/List"]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Maximize"
+
+[node name="IconSize" type="HSlider" parent="Dropdown/List"]
+custom_minimum_size = Vector2(60, 70)
+layout_mode = 2
+min_value = 32.0
+max_value = 150.0
+step = 8.0
+value = 64.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Dropdown/List/IconSize"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="Dropdown/List/IconSize"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Icon size"
+
+[connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
+[connection signal="toggled" from="." to="." method="toggle"]

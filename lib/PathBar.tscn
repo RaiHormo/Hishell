@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://cy6q1wyost6dp"]
+
+[ext_resource type="Script" uid="uid://c33n7eulwsjao" path="res://lib/path_bar.gd" id="1_7u6fd"]
+
+[node name="PathBar" type="ScrollContainer"]
+self_modulate = Color(1, 1, 1, 0)
+layout_direction = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -661.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+follow_focus = true
+vertical_scroll_mode = 0
+script = ExtResource("1_7u6fd")
+
+[node name="Breadcrumbs" type="HBoxContainer" parent="."]
+layout_direction = 2
+layout_mode = 2
+
+[node name="Path0" type="Button" parent="Breadcrumbs"]
+visible = false
+custom_minimum_size = Vector2(42, 42)
+layout_mode = 2
+toggle_mode = true
+text = "Path"
+expand_icon = true
+
+[node name="Edit" type="LineEdit" parent="."]
+visible = false
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter path"
+
+[connection signal="resized" from="." to="." method="_on_resized"]
+[connection signal="pressed" from="Breadcrumbs/Path0" to="." method="_on_breadcrumb_pressed"]
+[connection signal="editing_toggled" from="Edit" to="." method="_on_edit_editing_toggled"]
+[connection signal="text_submitted" from="Edit" to="." method="_on_edit_text_submitted"]

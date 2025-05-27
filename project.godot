@@ -1,0 +1,48 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="HiShell"
+config/description="An OS and File manager made in Godot"
+run/main_scene="uid://bs8jx5somwhse"
+config/features=PackedStringArray("4.4")
+run/low_processor_mode=true
+boot_splash/bg_color=Color(0, 0, 0, 1)
+boot_splash/image="uid://cgj0n2piueqyn"
+config/icon="res://assets/higameos_logo.png"
+
+[autoload]
+
+System="*res://lib/system.gd"
+
+[display]
+
+window/size/viewport_width=1080
+window/size/viewport_height=720
+window/size/initial_position_type=3
+window/size/borderless=true
+window/size/transparent=true
+window/stretch/aspect="expand"
+window/stretch/scale=1.25
+window/per_pixel_transparency/allowed=true
+
+[godots]
+
+version_hint=""
+
+[physics]
+
+2d/physics_engine="Dummy"
+3d/physics_engine="Dummy"
+
+[rendering]
+
+environment/defaults/default_clear_color=Color(0.172833, 0.172833, 0.172833, 0)
