@@ -17,8 +17,8 @@ var icon_size:= 64:
 		update_layout.call_deferred()
 	get:
 		return int(icon.custom_minimum_size.x)
-
-func set_to(new_name: String):
+func set_to(new_name: String, folder:=false):
+	is_folder = folder
 	filename = new_name
 	if filename == "":
 		filename = "<empty>"

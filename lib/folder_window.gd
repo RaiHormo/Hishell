@@ -7,12 +7,15 @@ class_name FolderWindow
 		parse_folder()
 		if state == STATE_WINDOWED:
 			resize(get_optimal_size())
+			print("mio")
 enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING}
 var state:= STATE_LOADING
 var title: String
 var origin: Vector2
+var open_pos: Vector2
 var parent: Viewport
 @export var animation_speed:= 0.3
+@export var draggable = true
 var use_windows:= true
 var prev_size: Vector2
 var files: PackedStringArray
@@ -25,10 +28,10 @@ var drag_mouse_pos: Vector2
 
 func _ready() -> void:
 	size = Vector2(200, 200)
-	prev_size = size
 	if origin != Vector2.ZERO:
 		position = origin - Vector2(100, 100)
 	else: position = center_position()
+	if open_pos == Vector2.ZERO: open_pos = origin
 	#wrap_controls = false
 	#borderless = true
 	scale = Vector2(0.5, 0.5)
@@ -36,12 +39,26 @@ func _ready() -> void:
 	$Content.hide()
 	$Splash.show()
 	set_tweened("modulate", Color.WHITE)
-	await set_tweened("scale", Vector2.ONE)
+	set_tweened("scale", Vector2.ONE)
+	if is_root_window(): draggable = false
+	if draggable:
+		drag_mouse_pos = size/2
+		while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			position = get_viewport().get_mouse_position() - size/2
+			await System.wait()
+		open_pos = get_viewport().get_mouse_position()
+		end_drag()
+	open()
+
+func open():
+	print("as")
 	await parse_folder()
 	#borderless = false
+	prev_size = get_optimal_size()
 	if not is_root_window():
-		await resize(get_optimal_size(), center_position())
+		await resize(prev_size, open_pos - prev_size/2)
 		state = STATE_WINDOWED
+	else: _on_maximize_pressed()
 	$Splash.hide()
 	$Content.show()
 	#wrap_controls = true
@@ -75,8 +92,11 @@ func _process(_delta: float) -> void:
 			position = parent.get_mouse_position() - drag_mouse_pos
 			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				end_drag()
-	position.x = clamp(position.x, 0, get_viewport_rect().size.x-size.x)
-	position.y = clamp(position.y, 0, get_viewport_rect().size.y-size.y)
+	
+func limit_pos(pos: Vector2, siz:Vector2 = size):
+	pos.x = clamp(pos.x, 0, get_viewport_rect().size.x-siz.x)
+	pos.y = clamp(pos.y, 0, get_viewport_rect().size.y-siz.y)
+	return pos
 
 func set_tweened(property: StringName, value: Variant) -> bool:
 	match property:
@@ -98,6 +118,7 @@ func end_drag():
 	state = STATE_WINDOWED
 	$Content.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	set_tweened("scale", Vector2.ONE)
+	set_tweened("position", limit_pos(position))
 
 func _on_size_changed() -> void:
 	if is_instance_valid(grid) and grid.visible:
@@ -155,12 +176,11 @@ func parse_folder():
 		slot.set_to("")
 	for folder in folders:
 		var slot = grid.get_child(i)
-		slot.set_to(folder)
-		slot.is_folder = true
+		slot.set_to(folder, true)
 		i += 1
 	for file in files:
 		var slot = grid.get_child(i)
-		slot.set_to(file)
+		slot.set_to(file, false)
 		i += 1
 
 func navigate(path: String, force_local:= false):
@@ -169,11 +189,21 @@ func navigate(path: String, force_local:= false):
 		System.launch(path, foc.global_position + foc.size/2, self)
 	else:
 		if DirAccess.dir_exists_absolute(System.abs_path(path)):
-			location = path
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				await System.wait(animation_speed)
+				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+					var foc = parent.gui_get_focus_owner()
+					System.launch(path, get_viewport().get_mouse_position(), System.root_window())
+				else:
+					location = path
+			else:
+				location = path
 
 func _on_close_requested() -> void:
 	if is_root_window():
 		get_tree().quit()
+	set_tweened("modulate", Color.TRANSPARENT)
+	await resize(Vector2(200,200), origin)
 	queue_free()
 
 func _on_maximize_pressed() -> void:
@@ -194,6 +224,7 @@ func _on_maximize_pressed() -> void:
 			update_layoyt()
 
 func resize(siz: Vector2, pos: Vector2 = position):
+	pos = limit_pos(pos, siz)
 	set_tweened("size", siz)
 	set_tweened("position", pos)
 	await System.wait(animation_speed)

@@ -16,7 +16,8 @@ run/main_scene="uid://bs8jx5somwhse"
 config/features=PackedStringArray("4.4")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0, 0, 0, 1)
-boot_splash/image="uid://cgj0n2piueqyn"
+boot_splash/fullsize=false
+boot_splash/image="uid://bbi2rfqb6edfc"
 config/icon="res://assets/higameos_logo.png"
 
 [autoload]

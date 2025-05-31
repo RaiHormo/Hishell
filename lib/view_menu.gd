@@ -12,7 +12,6 @@ func do_connections():
 	dropdown.get_node("List/IconSize").connect("value_changed", window._icon_size_slider)
 
 func toggle(toggled_on: bool) -> void:
-	print("a")
 	if toggled_on:
 		dropdown.reparent(get_tree().root, true)
 		dropdown.show()
@@ -21,3 +20,10 @@ func toggle(toggled_on: bool) -> void:
 	else:
 		dropdown.reparent(self, true)
 		dropdown.hide()
+
+
+
+func _on_focus_exited() -> void:
+	while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT): await System.wait()
+	button_pressed = false
+	toggle(false)

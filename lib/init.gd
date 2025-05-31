@@ -2,6 +2,7 @@ extends Control
 
 func _ready() -> void:
 	System.init = self
+	await System.wait(0.3)
 	if not DirAccess.dir_exists_absolute(System.root):
 		DirAccess.make_dir_absolute(System.root)
 		for i in System.get_usernames():

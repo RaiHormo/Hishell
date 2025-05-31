@@ -1,6 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://bs8jx5somwhse"]
+[gd_scene load_steps=4 format=3 uid="uid://bs8jx5somwhse"]
 
 [ext_resource type="Script" uid="uid://cehwmxfa6wv2a" path="res://lib/init.gd" id="1_0l2cy"]
+[ext_resource type="Texture2D" uid="uid://bbi2rfqb6edfc" path="res://assets/higameos_logo.png" id="2_uofpy"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7rbps"]
+bg_color = Color(0, 0, 0, 1)
 
 [node name="Base" type="Control"]
 layout_mode = 3
@@ -10,3 +14,19 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_0l2cy")
+
+[node name="Boot" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_7rbps")
+
+[node name="LogoContainer" type="CenterContainer" parent="Boot"]
+layout_mode = 2
+
+[node name="Logo" type="TextureRect" parent="Boot/LogoContainer"]
+layout_mode = 2
+texture = ExtResource("2_uofpy")

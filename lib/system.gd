@@ -13,11 +13,12 @@ var user: Dictionary
 
 func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_tree().root, maximized:= false):
 	var window = preload("res://lib/FolderWindow.tscn").instantiate()
-	parent.add_child.call_deferred(window)
 	window.location = path
 	window.origin = position
-	if maximized: window.state = FolderWindow.STATE_MAXIMIZED
+	window.open_pos = position
 	window.parent = parent.get_viewport()
+	parent.add_child(window)
+	if maximized: window.state = FolderWindow.STATE_MAXIMIZED
 
 func wait(time: float = 0):
 	await get_tree().create_timer(time).timeout
