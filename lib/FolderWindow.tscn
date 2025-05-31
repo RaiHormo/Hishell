@@ -75,6 +75,7 @@ corner_radius_bottom_left = 24
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f3md2"]
 
 [node name="Window" type="Control"]
+custom_minimum_size = Vector2(200, 200)
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -115,7 +116,7 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ha426")
 
 [node name="Background" type="PanelContainer" parent="."]
-modulate = Color(0, 0, 0, 0.7)
+modulate = Color(0, 0, 0, 0.588235)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -131,6 +132,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+focus_mode = 1
 
 [node name="Container" type="VBoxContainer" parent="Content"]
 layout_mode = 2
@@ -187,14 +189,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 last_wrap_alignment = 1
-
-[node name="Decorations" type="Control" parent="."]
-layout_mode = 2
-anchors_preset = 0
-offset_left = 386.0
-offset_top = 226.0
-offset_right = 386.0
-offset_bottom = 226.0
 
 [node name="Splash" type="CenterContainer" parent="."]
 layout_mode = 1

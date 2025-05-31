@@ -11,8 +11,10 @@ config_version=5
 [application]
 
 config/name="HiShell"
-config/description="An OS and File manager made in Godot"
+config/description="A desktop and File manager made in Godot"
 run/main_scene="uid://bs8jx5somwhse"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="hishell"
 config/features=PackedStringArray("4.4")
 run/low_processor_mode=true
 boot_splash/bg_color=Color(0, 0, 0, 1)
@@ -30,10 +32,8 @@ window/size/viewport_width=1080
 window/size/viewport_height=720
 window/size/initial_position_type=3
 window/size/borderless=true
-window/size/transparent=true
 window/stretch/aspect="expand"
 window/stretch/scale=1.25
-window/per_pixel_transparency/allowed=true
 
 [godots]
 
@@ -46,4 +46,4 @@ version_hint=""
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0.172833, 0.172833, 0.172833, 0)
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)

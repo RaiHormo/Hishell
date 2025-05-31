@@ -8,7 +8,7 @@ class_name FolderWindow
 		if state == STATE_WINDOWED:
 			resize(get_optimal_size())
 			print("mio")
-enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING}
+enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING, STATE_RESIZE}
 var state:= STATE_LOADING
 var title: String
 var origin: Vector2
@@ -20,7 +20,7 @@ var use_windows:= true
 var prev_size: Vector2
 var files: PackedStringArray
 var folders: PackedStringArray
-@onready var decorations: Control = $Decorations
+#@onready var decorations: Control = $Decorations
 @onready var background = $Background
 @onready var grid = %Grid
 var grid_icon_size:= 64
@@ -40,6 +40,7 @@ func _ready() -> void:
 	$Splash.show()
 	set_tweened("modulate", Color.WHITE)
 	set_tweened("scale", Vector2.ONE)
+	var timer = get_tree().create_timer(animation_speed)
 	if is_root_window(): draggable = false
 	if draggable:
 		drag_mouse_pos = size/2
@@ -48,6 +49,7 @@ func _ready() -> void:
 			await System.wait()
 		open_pos = get_viewport().get_mouse_position()
 		end_drag()
+	while timer.time_left != 0: await System.wait()
 	open()
 
 func open():
@@ -58,7 +60,7 @@ func open():
 	if not is_root_window():
 		await resize(prev_size, open_pos - prev_size/2)
 		state = STATE_WINDOWED
-	else: _on_maximize_pressed()
+	else: state = STATE_MAXIMIZED
 	$Splash.hide()
 	$Content.show()
 	#wrap_controls = true
@@ -92,6 +94,12 @@ func _process(_delta: float) -> void:
 			position = parent.get_mouse_position() - drag_mouse_pos
 			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				end_drag()
+		STATE_RESIZE:
+			$Content.mouse_default_cursor_shape = CursorShape.CURSOR_FDIAGSIZE
+			size = get_viewport().get_mouse_position()-position
+			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+				state = STATE_WINDOWED
+				$Content.mouse_default_cursor_shape = CursorShape.CURSOR_ARROW
 	
 func limit_pos(pos: Vector2, siz:Vector2 = size):
 	pos.x = clamp(pos.x, 0, get_viewport_rect().size.x-siz.x)
@@ -139,7 +147,7 @@ func update_layoyt():
 		position.x = max(position.x, 0)
 	if position.y < 0:
 		position.y = max(position.y, 48)
-	decorations.show()
+	#decorations.show()
 	if is_root_window():
 		$Wallpaper.show()
 		$Background.hide()
@@ -167,6 +175,7 @@ func parse_folder():
 		title = "Can't access this folder"
 		return
 	grid.show()
+	for i in grid.get_children(): i.free()
 	while grid.get_child_count() < files.size() + folders.size():
 		var slot = preload("res://lib/FileSlot.tscn").instantiate()
 		grid.add_child(slot)
@@ -192,7 +201,6 @@ func navigate(path: String, force_local:= false):
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				await System.wait(animation_speed)
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					var foc = parent.gui_get_focus_owner()
 					System.launch(path, get_viewport().get_mouse_position(), System.root_window())
 				else:
 					location = path
@@ -200,10 +208,10 @@ func navigate(path: String, force_local:= false):
 				location = path
 
 func _on_close_requested() -> void:
-	if is_root_window():
-		get_tree().quit()
 	set_tweened("modulate", Color.TRANSPARENT)
 	await resize(Vector2(200,200), origin)
+	if is_root_window():
+		get_tree().quit()
 	queue_free()
 
 func _on_maximize_pressed() -> void:
@@ -265,3 +273,6 @@ func _on_content_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and state == STATE_WINDOWED:
 			enter_drag(get_local_mouse_position())
+			$Content.grab_focus()
+		elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and state == STATE_WINDOWED:
+			state = STATE_RESIZE

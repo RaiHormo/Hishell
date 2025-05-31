@@ -5,7 +5,7 @@ render_mode unshaded;
  * How blurry the result should be.
  * This value will cause the shader to sample each pixel's neighbors up to `strength` pixels away and blur them together.
  */
-uniform float strength : hint_range(0.0, 10.0) = 0.0;
+uniform float strength : hint_range(0.0, 50.0) = 0.0;
 
 /**
  * Exponent value for the number of samples to take.
