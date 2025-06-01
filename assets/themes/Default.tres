@@ -1,0 +1,61 @@
+[gd_resource type="Theme" load_steps=10 format=3 uid="uid://vwqrw53ttwhu"]
+
+[ext_resource type="Texture2D" uid="uid://bjgmra3wsayvr" path="res://assets/icons/file.svg" id="1_3044f"]
+[ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/icons/folder.svg" id="1_njmry"]
+[ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="2_k18pd"]
+[ext_resource type="Texture2D" uid="uid://ckcbj03340fxp" path="res://assets/icons/image.svg" id="3_comd3"]
+[ext_resource type="Texture2D" uid="uid://dcjrf1rieb4cc" path="res://assets/icons/text.svg" id="4_x64wf"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ha426"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ng6j3"]
+bg_color = Color(0.133333, 0.133333, 0.133333, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.584314)
+shadow_size = 12
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ng6j3"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_laqrm"]
+bg_color = Color(0.168627, 0.168627, 0.168627, 1)
+draw_center = false
+border_width_top = 48
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+expand_margin_top = 46.0
+shadow_color = Color(0, 0, 0, 0.188235)
+shadow_size = 10
+
+[resource]
+Button/styles/normal = SubResource("StyleBoxEmpty_ha426")
+FlowContainer/constants/h_separation = 8
+FlowContainer/constants/v_separation = 8
+Icons/icons/file = ExtResource("1_3044f")
+Icons/icons/folder = ExtResource("1_njmry")
+Icons/icons/image = ExtResource("3_comd3")
+Icons/icons/text = ExtResource("4_x64wf")
+Label/colors/font_shadow_color = Color(0, 0, 0, 0.215686)
+MarginContainer/constants/margin_bottom = 12
+MarginContainer/constants/margin_left = 12
+MarginContainer/constants/margin_right = 12
+MarginContainer/constants/margin_top = 12
+PanelContainer/styles/panel = SubResource("StyleBoxFlat_ng6j3")
+ScrollContainer/styles/panel = SubResource("StyleBoxEmpty_ng6j3")
+Window/constants/close_h_offset = 38
+Window/constants/close_v_offset = 32
+Window/constants/resize_margin = 24
+Window/constants/title_height = 48
+Window/icons/close = ExtResource("2_k18pd")
+Window/icons/close_pressed = null
+Window/styles/embedded_border = SubResource("StyleBoxFlat_laqrm")
+Window/styles/embedded_unfocused_border = SubResource("StyleBoxFlat_laqrm")

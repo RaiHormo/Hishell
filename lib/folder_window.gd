@@ -109,7 +109,7 @@ func limit_pos(pos: Vector2, siz:Vector2 = size):
 func set_tweened(property: StringName, value: Variant) -> bool:
 	match property:
 		"size", "position", "scale", "modulate":
-			var t = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+			var t = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 			t.tween_property(self, String(property), value, animation_speed)
 			await t.finished
 			return true
@@ -185,11 +185,11 @@ func parse_folder():
 		slot.set_to("")
 	for folder in folders:
 		var slot = grid.get_child(i)
-		slot.set_to(folder, true)
+		slot.set_to(folder, System.abs_path(location)+folder)
 		i += 1
 	for file in files:
 		var slot = grid.get_child(i)
-		slot.set_to(file, false)
+		slot.set_to(file, System.abs_path(location)+file)
 		i += 1
 
 func navigate(path: String, force_local:= false):

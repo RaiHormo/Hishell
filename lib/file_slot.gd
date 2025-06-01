@@ -6,8 +6,8 @@ var filename: String
 @onready var icon: TextureRect = $Icon
 @onready var label: Label = $Label
 @onready var button: Button = $Icon/Button
-var already_loading:= false
 var thread: Thread = null
+
 
 var is_folder:= false
 var icon_size:= 64:
@@ -17,8 +17,11 @@ var icon_size:= 64:
 		update_layout.call_deferred()
 	get:
 		return int(icon.custom_minimum_size.x)
-func set_to(new_name: String, folder:=false):
-	is_folder = folder
+
+func set_to(new_name: String, path: String = ""):
+	if path != "":
+		icon.texture = Thumbnail.get_icon_for(path, self)
+	else: icon.texture = null
 	filename = new_name
 	if filename == "":
 		filename = "<empty>"
@@ -41,15 +44,7 @@ func update_layout():
 	else:
 		button.focus_mode = Control.FOCUS_ALL
 		button.mouse_filter = Control.MOUSE_FILTER_STOP
-		if is_folder:
-			icon.texture = get_theme_icon("folder", "Icons")
-		elif (".png" in filename or ".jpg" in filename or ".svg" in filename or ".avif" in filename or ".webp" in filename):
-			if not already_loading:
-				already_loading = true
-				thread = Thread.new()
-				thread.start(load_image_preview)
-		else:
-			icon.texture = preload("res://assets/icon.svg")
+		
 	if icon_size < 40:
 		columns = 3
 		label.autowrap_mode = TextServer.AUTOWRAP_OFF
@@ -67,14 +62,7 @@ func update_layout():
 
 
 func _on_button_pressed() -> void:
-	if is_folder:
-		window.navigate(window.location+filename)
-
-func load_image_preview():
-	already_loading = true
-	if window.files.size() < 20:
-		var image = Image.load_from_file(window.location+filename)
-		icon.set_deferred("texture", ImageTexture.create_from_image(image))
+	window.navigate(window.location+filename)
 
 func _exit_tree():
 	if thread != null and thread.is_started():

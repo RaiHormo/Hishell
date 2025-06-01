@@ -1,63 +1,13 @@
-[gd_scene load_steps=16 format=3 uid="uid://d2ko8gihp4xr5"]
+[gd_scene load_steps=12 format=3 uid="uid://d2ko8gihp4xr5"]
 
-[ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/folder.svg" id="1_f3md2"]
+[ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/icons/folder.svg" id="1_f3md2"]
 [ext_resource type="Script" uid="uid://baq7a0lly5mcp" path="res://lib/folder_window.gd" id="1_laqrm"]
+[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_rpmc1"]
 [ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="2_ha426"]
 [ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="4_f3md2"]
 [ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="4_ha426"]
 [ext_resource type="PackedScene" uid="uid://cy6q1wyost6dp" path="res://lib/PathBar.tscn" id="6_7q7vf"]
 [ext_resource type="PackedScene" uid="uid://decpusnoqjmfc" path="res://lib/ViewMenu.tscn" id="7_ptbaw"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ha426"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ng6j3"]
-bg_color = Color(0.133333, 0.133333, 0.133333, 1)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
-shadow_color = Color(0, 0, 0, 0.584314)
-shadow_size = 12
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ng6j3"]
-content_margin_left = 12.0
-content_margin_top = 12.0
-content_margin_right = 12.0
-content_margin_bottom = 12.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_laqrm"]
-bg_color = Color(0.168627, 0.168627, 0.168627, 1)
-draw_center = false
-border_width_top = 48
-border_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
-expand_margin_top = 46.0
-shadow_color = Color(0, 0, 0, 0.188235)
-shadow_size = 10
-
-[sub_resource type="Theme" id="Theme_gs733"]
-Button/styles/normal = SubResource("StyleBoxEmpty_ha426")
-FlowContainer/constants/h_separation = 8
-FlowContainer/constants/v_separation = 8
-Icons/icons/folder = ExtResource("1_f3md2")
-Label/colors/font_shadow_color = Color(0, 0, 0, 0.215686)
-MarginContainer/constants/margin_bottom = 12
-MarginContainer/constants/margin_left = 12
-MarginContainer/constants/margin_right = 12
-MarginContainer/constants/margin_top = 12
-PanelContainer/styles/panel = SubResource("StyleBoxFlat_ng6j3")
-ScrollContainer/styles/panel = SubResource("StyleBoxEmpty_ng6j3")
-Window/constants/close_h_offset = 38
-Window/constants/close_v_offset = 32
-Window/constants/resize_margin = 24
-Window/constants/title_height = 48
-Window/icons/close = ExtResource("2_ha426")
-Window/icons/close_pressed = null
-Window/styles/embedded_border = SubResource("StyleBoxFlat_laqrm")
-Window/styles/embedded_unfocused_border = SubResource("StyleBoxFlat_laqrm")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f3md2"]
 shader = ExtResource("4_f3md2")
@@ -90,7 +40,7 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme = SubResource("Theme_gs733")
+theme = ExtResource("1_rpmc1")
 script = ExtResource("1_laqrm")
 
 [node name="Wallpaper" type="TextureRect" parent="."]
