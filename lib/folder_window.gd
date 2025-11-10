@@ -4,10 +4,11 @@ class_name FolderWindow
 @export var location:= "user://":
 	set(val):
 		location = System.abs_path(val)
-		parse_folder()
-		if state == STATE_WINDOWED:
-			resize(get_optimal_size())
-			print("mio")
+		if active:
+			parse_folder()
+			if has_node("%PathBar"): %PathBar.show_path(location)
+			if state == STATE_WINDOWED:
+				resize(get_optimal_size())
 enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING, STATE_RESIZE}
 var state:= STATE_LOADING
 var title: String
@@ -22,9 +23,9 @@ var files: PackedStringArray
 var folders: PackedStringArray
 #@onready var decorations: Control = $Decorations
 @onready var background = $Background
-@onready var grid = %Grid
-var grid_icon_size:= 64
 var drag_mouse_pos: Vector2
+var active := false
+signal window_ready
 
 func _ready() -> void:
 	size = Vector2(200, 200)
@@ -53,9 +54,10 @@ func _ready() -> void:
 	open()
 
 func open():
-	print("as")
 	await parse_folder()
-	#borderless = false
+	setup_window()
+
+func setup_window():
 	prev_size = get_optimal_size()
 	if not is_root_window():
 		await resize(prev_size, open_pos - prev_size/2)
@@ -66,9 +68,14 @@ func open():
 	#wrap_controls = true
 	update_layoyt()
 	parent.connect("size_changed", _on_size_changed)
-	%PathBar.window = self
-	%ViewMenu.window = self
-	%ViewMenu.do_connections()
+	if has_node("%PathBar"):
+		%PathBar.window = self
+		%PathBar.show_path(location)
+	if has_node("%ViewMenu"):
+		%ViewMenu.window = self
+		%ViewMenu.do_connections()
+	active = true
+	window_ready.emit()
 	
 
 func _process(_delta: float) -> void:
@@ -129,13 +136,9 @@ func end_drag():
 	set_tweened("position", limit_pos(position))
 
 func _on_size_changed() -> void:
-	if is_instance_valid(grid) and grid.visible:
-		update_layoyt()
+	update_layoyt()
 
 func update_layoyt():
-	if not is_instance_valid(grid): return
-	for i: FileSlot in grid.get_children():
-		i.icon_size = grid_icon_size
 	if state == STATE_MAXIMIZED:
 		resize(parent.get_visible_rect().size, Vector2i(0,0))
 		use_windows = true
@@ -148,16 +151,19 @@ func update_layoyt():
 	if position.y < 0:
 		position.y = max(position.y, 48)
 	#decorations.show()
+	if has_node("%Grid"):
+		%Grid.update()
 	if is_root_window():
-		$Wallpaper.show()
-		$Background.hide()
-		$Blur.hide()
+		if has_node("Wallpaper"): $Wallpaper.show()
+		if has_node("Background"): $Background.hide()
+		if has_node("Blur"): $Blur.hide()
 	else:
-		$Background.show()
-		$Wallpaper.hide()
-		$Blur.show()
+		if has_node("Background"): $Background.show()
+		if has_node("Wallpaper"): $Wallpaper.hide()
+		if has_node("Blur"): $Blur.show()
 
 func parse_folder():
+	var grid = %Grid
 	if not is_instance_valid(grid): return
 	if location[-1] != '/': location += '/'
 	if not DirAccess.dir_exists_absolute(location):
@@ -168,7 +174,6 @@ func parse_folder():
 	var location_parts = location.split("/", false)
 	title = location_parts[-1] if not (location_parts.is_empty() or location_parts[-1].is_empty()) else location
 	name = title
-	%PathBar.show_path(location)
 	files = DirAccess.get_files_at(location).duplicate()
 	folders = DirAccess.get_directories_at(location).duplicate()
 	if DirAccess.get_open_error():
@@ -193,8 +198,8 @@ func parse_folder():
 		i += 1
 
 func navigate(path: String, force_local:= false):
+	var foc = parent.gui_get_focus_owner()
 	if use_windows and not force_local:
-		var foc = parent.gui_get_focus_owner()
 		System.launch(path, foc.global_position + foc.size/2, self)
 	else:
 		if DirAccess.dir_exists_absolute(System.abs_path(path)):
@@ -206,6 +211,9 @@ func navigate(path: String, force_local:= false):
 					location = path
 			else:
 				location = path
+		else: 
+			await System.launch(path, foc.global_position + foc.size/2, System.root_window())
+			#_on_close_requested()
 
 func _on_close_requested() -> void:
 	set_tweened("modulate", Color.TRANSPARENT)
@@ -238,7 +246,7 @@ func resize(siz: Vector2, pos: Vector2 = position):
 	await System.wait(animation_speed)
 
 func _icon_size_slider(value: float) -> void:
-	grid_icon_size = int(value)
+	%Grid.icon_size = int(value)
 	update_layoyt()
 
 func _opacity_slider(value: float) -> void:

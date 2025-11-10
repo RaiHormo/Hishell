@@ -6,19 +6,17 @@ static func get_icon_for(path: String, theme: Control) -> Texture2D:
 	if is_folder:
 		return theme.get_theme_icon("folder", "Icons")
 	else:
-		var filename: String = path.split("/", false)[-1]
-		var extension: String = filename.split(".", false)[-1].to_lower()
-		match extension:
-			"png", "jpg", "jpeg", "svg", "avif", "webp":
-				return theme.get_theme_icon("image", "Icons")
-			"txt", "md", "cfg", "html", "log", "sh", "ini", "csv", "tres":
+		match System.get_file_type(path):
+			"picture":
+				return theme.get_theme_icon("picture", "Icons")
+			"text":
 				return theme.get_theme_icon("text", "Icons")
 			_:
 				return theme.get_theme_icon("file", "Icons")
 
-func load_image_preview(path: String):
+static func load_image(path: String):
 	var thread = Thread.new()
-	thread.start(load_image_preview)
+	thread.start(load_image)
 	await thread.wait_to_finish()
 	var img = Image.load_from_file(path)
 	return ImageTexture.create_from_image(img)

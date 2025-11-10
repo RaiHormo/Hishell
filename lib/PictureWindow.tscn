@@ -1,29 +1,25 @@
-[gd_scene load_steps=13 format=3 uid="uid://d2ko8gihp4xr5"]
+[gd_scene load_steps=10 format=3 uid="uid://syed6pwne5pl"]
 
-[ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/icons/folder.svg" id="1_f3md2"]
-[ext_resource type="Script" uid="uid://baq7a0lly5mcp" path="res://lib/folder_window.gd" id="1_laqrm"]
-[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_rpmc1"]
-[ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="2_ha426"]
-[ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="4_f3md2"]
-[ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="4_ha426"]
-[ext_resource type="PackedScene" uid="uid://cy6q1wyost6dp" path="res://lib/PathBar.tscn" id="6_7q7vf"]
-[ext_resource type="PackedScene" uid="uid://decpusnoqjmfc" path="res://lib/ViewMenu.tscn" id="7_ptbaw"]
-[ext_resource type="Script" uid="uid://dxumdyb2awpiy" path="res://lib/content_grid.gd" id="8_8yrpp"]
+[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_n8g6s"]
+[ext_resource type="Script" uid="uid://bbv5e3dn4ffe3" path="res://lib/picture_window.gd" id="2_pt6uf"]
+[ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="3_akf6e"]
+[ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="4_yasyc"]
+[ext_resource type="PackedScene" uid="uid://cy6q1wyost6dp" path="res://lib/PathBar.tscn" id="5_b3dg6"]
+[ext_resource type="Texture2D" uid="uid://ckcbj03340fxp" path="res://assets/icons/picture.svg" id="6_pt6uf"]
+[ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="7_xyd6o"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_f3md2"]
-shader = ExtResource("4_f3md2")
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qc2tb"]
+shader = ExtResource("4_yasyc")
 shader_parameter/strength = 10.0
 shader_parameter/sample_power = 3
 shader_parameter/is_canvas_group = true
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ha426"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_n8g6s"]
 bg_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 24
 corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f3md2"]
 
 [node name="Window" type="Control"]
 custom_minimum_size = Vector2(200, 200)
@@ -41,33 +37,21 @@ grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
-theme = ExtResource("1_rpmc1")
-script = ExtResource("1_laqrm")
-
-[node name="Wallpaper" type="TextureRect" parent="."]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("4_ha426")
-expand_mode = 1
-stretch_mode = 6
+theme = ExtResource("1_n8g6s")
+script = ExtResource("2_pt6uf")
 
 [node name="Blur" type="Panel" parent="."]
-material = SubResource("ShaderMaterial_f3md2")
+material = SubResource("ShaderMaterial_qc2tb")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ha426")
+theme_override_styles/panel = SubResource("StyleBoxFlat_n8g6s")
 
 [node name="Background" type="PanelContainer" parent="."]
-modulate = Color(0, 0, 0, 0.588235)
+modulate = Color(0, 0, 0, 0.69411767)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -94,11 +78,7 @@ size_flags_vertical = 3
 layout_mode = 2
 theme_override_constants/separation = 17
 
-[node name="PathBar" parent="Content/Container/TopBar" instance=ExtResource("6_7q7vf")]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="ViewMenu" parent="Content/Container/TopBar" instance=ExtResource("7_ptbaw")]
+[node name="PathBar" parent="Content/Container/TopBar" instance=ExtResource("5_b3dg6")]
 unique_name_in_owner = true
 layout_mode = 2
 
@@ -123,24 +103,18 @@ text = "Opacity"
 [node name="Close" type="Button" parent="Content/Container/TopBar"]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
-icon = ExtResource("2_ha426")
+icon = ExtResource("7_xyd6o")
 alignment = 2
 icon_alignment = 1
 
-[node name="Center" type="ScrollContainer" parent="Content/Container"]
-layout_mode = 2
-size_flags_vertical = 3
-theme_override_styles/focus = SubResource("StyleBoxEmpty_f3md2")
-follow_focus = true
-draw_focus_border = true
-
-[node name="Grid" type="FlowContainer" parent="Content/Container/Center"]
+[node name="Picture" type="TextureRect" parent="Content/Container"]
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-last_wrap_alignment = 1
-script = ExtResource("8_8yrpp")
+texture = ExtResource("3_akf6e")
+expand_mode = 2
+stretch_mode = 5
 
 [node name="Splash" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -153,7 +127,7 @@ grow_vertical = 2
 [node name="Icon" type="TextureRect" parent="Splash"]
 custom_minimum_size = Vector2(86, 86)
 layout_mode = 2
-texture = ExtResource("1_f3md2")
+texture = ExtResource("6_pt6uf")
 expand_mode = 1
 stretch_mode = 5
 

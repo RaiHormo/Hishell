@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://bjgmra3wsayvr" path="res://assets/icons/file.svg" id="1_3044f"]
 [ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/icons/folder.svg" id="1_njmry"]
 [ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="2_k18pd"]
-[ext_resource type="Texture2D" uid="uid://ckcbj03340fxp" path="res://assets/icons/image.svg" id="3_comd3"]
+[ext_resource type="Texture2D" uid="uid://ckcbj03340fxp" path="res://assets/icons/picture.svg" id="3_3044f"]
 [ext_resource type="Texture2D" uid="uid://dcjrf1rieb4cc" path="res://assets/icons/text.svg" id="4_x64wf"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ha426"]
@@ -42,7 +42,7 @@ FlowContainer/constants/h_separation = 8
 FlowContainer/constants/v_separation = 8
 Icons/icons/file = ExtResource("1_3044f")
 Icons/icons/folder = ExtResource("1_njmry")
-Icons/icons/image = ExtResource("3_comd3")
+Icons/icons/picture = ExtResource("3_3044f")
 Icons/icons/text = ExtResource("4_x64wf")
 Label/colors/font_shadow_color = Color(0, 0, 0, 0.215686)
 MarginContainer/constants/margin_bottom = 12

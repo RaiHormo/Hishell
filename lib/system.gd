@@ -10,15 +10,28 @@ var users: Array[Dictionary] = [
 	}
 ]
 var user: Dictionary
+var file_extensions: Dictionary[StringName, PackedStringArray] = {
+	"picture": ["png", "jpg", "jpeg", "svg", "avif", "webp"],
+	"text": ["txt", "md", "cfg", "html", "log", "sh", "ini", "csv", "tres"]
+}
+var file_associations: Dictionary[StringName, String] = {
+	"folder": "res://lib/FolderWindow.tscn",
+	"picture": "res://lib/PictureWindow.tscn",
+	"unknown": "",
+	"invalid": "",
+}
 
 func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_tree().root, maximized:= false):
-	var window = preload("res://lib/FolderWindow.tscn").instantiate()
+	var runner = file_associations.get(get_file_type(path))
+	if runner == "" or runner == null: return
+	var window = (load(runner) as PackedScene).instantiate()
 	window.location = path
 	window.origin = position
 	window.open_pos = position
 	window.parent = parent.get_viewport()
 	parent.add_child(window)
 	if maximized: window.state = FolderWindow.STATE_MAXIMIZED
+	await window.window_ready
 
 func wait(time: float = 0):
 	await get_tree().create_timer(time).timeout
@@ -37,3 +50,16 @@ func get_usernames() -> Array[String]:
 	for i in users:
 		arr.append(i.get("name"))
 	return arr
+
+func get_file_type(location: String) -> String:
+	if DirAccess.dir_exists_absolute(location):
+		return "folder"
+	elif FileAccess.file_exists(location):
+		var extension = location.split(".", false)[-1].to_lower()
+		if extension.contains("/"):
+			return "unknown"
+		for i in file_extensions:
+			if extension in file_extensions[i]:
+				return i
+		return "unknown"
+	return "invalid"

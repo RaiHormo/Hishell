@@ -7,6 +7,8 @@ func show_path(path: String):
 	for i in $Breadcrumbs.get_children():
 		if i.name != "Path0": i.queue_free()
 	path = path.replace(System.root, System.root_name)
+	path = path.replace(System.root_window().location.replace(System.root, System.root_name), "")
+	print(System.root_window().location.replace(System.root, System.root_name))
 	path_folders = path.split("/", false)
 	for i in path_folders:
 		var dup = $Breadcrumbs/Path0.duplicate()

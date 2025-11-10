@@ -20,7 +20,7 @@ stretch_mode = 5
 
 [node name="Button" type="Button" parent="Icon"]
 show_behind_parent = true
-layout_mode = 2
+layout_mode = 0
 offset_left = -2.0
 offset_top = -2.0
 offset_right = 66.0
