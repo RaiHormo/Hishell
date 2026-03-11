@@ -25,6 +25,7 @@ offset_left = -2.0
 offset_top = -2.0
 offset_right = 66.0
 offset_bottom = 93.0
+mouse_default_cursor_shape = 2
 action_mode = 0
 
 [node name="Label" type="Label" parent="." unique_id=302973781]

@@ -23,6 +23,7 @@ var file_associations: Dictionary[StringName, String] = {
 var theme: Theme = preload("res://assets/themes/Default.tres")
 
 func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_tree().root, maximized:= false):
+	path = abs_path(path)
 	var runner = file_associations.get(get_file_type(path))
 	if runner == "" or runner == null: return
 	var window = (load(runner) as PackedScene).instantiate()
@@ -46,6 +47,11 @@ func abs_path(path: String) -> String:
 	path = path.replace("//", "/")
 	return path
 
+func rel_path(path: String) -> String:
+	path = path.replace(root, root_name)
+	path = path.replace("//", "/")
+	return path
+
 func get_usernames() -> Array[String]:
 	var arr: Array[String]
 	for i in users:
@@ -53,6 +59,7 @@ func get_usernames() -> Array[String]:
 	return arr
 
 func get_file_type(location: String) -> String:
+	location = System.abs_path(location)
 	if DirAccess.dir_exists_absolute(location):
 		return "folder"
 	elif FileAccess.file_exists(location):

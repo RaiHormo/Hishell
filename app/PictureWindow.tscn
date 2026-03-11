@@ -4,7 +4,7 @@
 [ext_resource type="Script" uid="uid://bbv5e3dn4ffe3" path="res://app/picture_window.gd" id="2_pv154"]
 [ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="3_gg00s"]
 [ext_resource type="PackedScene" uid="uid://cy6q1wyost6dp" path="res://toolkit/PathBar.tscn" id="4_2csaa"]
-[ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="5_3t4ry"]
+[ext_resource type="PackedScene" uid="uid://b734ksn8ilqoi" path="res://toolkit/CloseButton.tscn" id="5_hewoh"]
 [ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="6_0vq7u"]
 [ext_resource type="Texture2D" uid="uid://ckcbj03340fxp" path="res://assets/icons/picture.svg" id="7_hvhig"]
 
@@ -100,12 +100,8 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "Opacity"
 
-[node name="Close" type="Button" parent="Content/Container/TopBar" unique_id=545687038]
-custom_minimum_size = Vector2(32, 32)
+[node name="Close" parent="Content/Container/TopBar" unique_id=1011518309 instance=ExtResource("5_hewoh")]
 layout_mode = 2
-icon = ExtResource("5_3t4ry")
-alignment = 2
-icon_alignment = 1
 
 [node name="Picture" type="TextureRect" parent="Content/Container" unique_id=1236442696]
 unique_name_in_owner = true
@@ -133,4 +129,3 @@ stretch_mode = 5
 
 [connection signal="gui_input" from="Content" to="." method="_on_content_gui_input"]
 [connection signal="value_changed" from="Content/Container/TopBar/Opacity" to="." method="_opacity_slider"]
-[connection signal="pressed" from="Content/Container/TopBar/Close" to="." method="_on_close_requested"]

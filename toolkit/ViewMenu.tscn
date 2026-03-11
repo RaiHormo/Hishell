@@ -1,18 +1,19 @@
 [gd_scene format=3 uid="uid://decpusnoqjmfc"]
 
-[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_bk8fn"]
-[ext_resource type="Script" uid="uid://dlqtt27645lnf" path="res://toolkit/drop_menu.gd" id="1_puvff"]
+[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_ewigs"]
+[ext_resource type="Script" uid="uid://dlqtt27645lnf" path="res://toolkit/drop_menu.gd" id="2_7h4gj"]
 
 [node name="ViewMenu" type="Button" unique_id=1796936364]
 offset_right = 53.0
 offset_bottom = 39.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("1_bk8fn")
+mouse_default_cursor_shape = 2
+theme = ExtResource("1_ewigs")
 toggle_mode = true
 action_mode = 0
 text = "View"
-script = ExtResource("1_puvff")
+script = ExtResource("2_7h4gj")
 
 [node name="Dropdown" type="PanelContainer" parent="." unique_id=1687519330]
 layout_mode = 0

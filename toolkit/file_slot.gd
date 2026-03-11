@@ -17,12 +17,13 @@ var icon_size:= 64:
 	get:
 		return int(icon.custom_minimum_size.x)
 
-func link_window(with: FolderWindow):
+func link_window(with: BaseWindow):
 	window = with
 
 func set_to(new_name: String, path: String = ""):
+	path = System.abs_path(path)
 	if path != "":
-		icon.texture = Thumbnail.get_icon_for(path, self)
+		icon.texture = await Thumbnail.get_icon_for(path, self)
 	else: icon.texture = null
 	filename = new_name
 	if filename == "":
@@ -64,7 +65,7 @@ func update_layout():
 
 
 func _on_button_pressed() -> void:
-	window.navigate(window.location+filename)
+	window.navigate(window.location+"/"+filename)
 
 func _exit_tree():
 	if thread != null and thread.is_started():

@@ -3,11 +3,12 @@ class_name BaseWindow
 
 @export var location:= "user://":
 	set(val):
-		location = System.abs_path(val)
+		location = System.rel_path(val)
 		if active:
 			if has_node("%PathBar"): %PathBar.show_path(location)
 			if state == STATE_WINDOWED:
 				resize(get_optimal_size())
+			location_changed(val)
 enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING, STATE_RESIZE}
 var state:= STATE_LOADING
 var title: String
@@ -53,6 +54,9 @@ func _ready() -> void:
 func open():
 	setup_window()
 
+func location_changed(_path: String):
+	pass
+
 func link_components(node: Node = self):
 	for i in node.get_children():
 		if i.has_method("link_window"):
@@ -68,7 +72,7 @@ func setup_window():
 	$Splash.hide()
 	$Content.show()
 	#wrap_controls = true
-	update_layoyt()
+	_update_layout()
 	parent.connect("size_changed", _on_size_changed)
 	link_components()
 	active = true
@@ -108,7 +112,7 @@ func set_tweened(property: StringName, value: Variant) -> bool:
 	return false
 
 func enter_drag(mouse_pos: Vector2):
-	$Content.mouse_default_cursor_shape = Control.CURSOR_DRAG
+	$Content.mouse_default_cursor_shape = Control.CURSOR_CAN_DROP
 	set_tweened("scale", Vector2(0.9, 0.9))
 	state = STATE_DRAG
 	drag_mouse_pos = mouse_pos
@@ -121,9 +125,9 @@ func end_drag():
 	set_tweened("position", limit_pos(position))
 
 func _on_size_changed() -> void:
-	update_layoyt()
+	_update_layout()
 
-func update_layoyt():
+func _update_layout():
 	if state == STATE_MAXIMIZED:
 		resize(parent.get_visible_rect().size, Vector2i(0,0))
 		use_windows = true
@@ -136,37 +140,23 @@ func update_layoyt():
 	if position.y < 0:
 		position.y = max(position.y, 48)
 	#decorations.show()
+	update_layout()
 	if has_node("%Grid"):
 		%Grid.update()
-	if is_root_window():
-		if has_node("Wallpaper"): $Wallpaper.show()
-		if has_node("Background"): $Background.hide()
-		if has_node("Blur"): $Blur.hide()
-	else:
-		if has_node("Background"): $Background.show()
-		if has_node("Wallpaper"): $Wallpaper.hide()
-		if has_node("Blur"): $Blur.show()
+
+func update_layout():
+	pass
 
 func message(type: String, value: Variant):
 	call(type, value)
 
 func navigate(path: String, force_local:= false):
+	path = System.abs_path(path)
 	var foc = parent.gui_get_focus_owner()
 	if use_windows and not force_local:
 		System.launch(path, foc.global_position + foc.size/2, self)
 	else:
-		if DirAccess.dir_exists_absolute(System.abs_path(path)):
-			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-				await System.wait(animation_speed)
-				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					System.launch(path, get_viewport().get_mouse_position(), System.root_window())
-				else:
-					location = path
-			else:
-				location = path
-		else: 
-			await System.launch(path, foc.global_position + foc.size/2, System.root_window())
-			#_on_close_requested()
+		location = path
 
 func window_control(msg: String):
 	match msg:
@@ -176,14 +166,16 @@ func window_control(msg: String):
 			var tree = get_tree()
 			get_parent().remove_child(self)
 			tree.root.add_child(self)
-			update_layoyt()
+			background.hide()
+			_update_layout()
 		"unmaximize":
 			if not is_root_window():
 				get_tree().root.remove_child(self)
 				System.root_window().add_child(self)
 			state = STATE_WINDOWED
+			background.show()
 			resize(prev_size, center_position())
-			update_layoyt()
+			_update_layout()
 		"maximize_toggle":
 			if STATE_MAXIMIZED: message("window_control", "unmaximize")
 			else: message("window_control", "maximize")
@@ -210,7 +202,7 @@ func resize(siz: Vector2, pos: Vector2 = position):
 
 func _icon_size_slider(value: float) -> void:
 	%Grid.icon_size = int(value)
-	update_layoyt()
+	_update_layout()
 
 func _opacity_slider(value: float) -> void:
 	background.modulate.a = value/100

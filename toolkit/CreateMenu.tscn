@@ -10,6 +10,7 @@ offset_right = -1005.0
 offset_bottom = -681.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
 toggle_mode = true
 action_mode = 0
 text = "New"

@@ -1,16 +1,17 @@
 extends ScrollContainer
 
 var path_folders: PackedStringArray
-var window: FolderWindow
+var window: BaseWindow
 
 func show_path(path: String):
 	for i in $Breadcrumbs.get_children():
 		if i.name != "Path0": i.queue_free()
 	path = path.replace(System.root, System.root_name)
-	path = path.replace(System.root_window().location.replace(System.root, System.root_name), "")
 	print(System.root_window().location.replace(System.root, System.root_name))
+	var root_folders = System.root_window().location.split("/")
 	path_folders = path.split("/", false)
 	for i in path_folders:
+		if i in root_folders: continue
 		var dup = $Breadcrumbs/Path0.duplicate()
 		if i == System.root_name:
 			dup.icon = preload("res://assets/higameos_logo.png")
@@ -22,7 +23,7 @@ func show_path(path: String):
 	$Edit.text = path
 	$Breadcrumbs.get_children()[-1].set_pressed_no_signal(true)
 
-func link_window(with: FolderWindow):
+func link_window(with: BaseWindow):
 	window = with
 	show_path(window.location)
 

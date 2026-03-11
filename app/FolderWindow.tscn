@@ -2,12 +2,11 @@
 
 [ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_l0ium"]
 [ext_resource type="Script" uid="uid://baq7a0lly5mcp" path="res://app/folder_window.gd" id="2_bpccl"]
-[ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="3_75xxu"]
 [ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="4_fe50d"]
 [ext_resource type="PackedScene" uid="uid://cy6q1wyost6dp" path="res://toolkit/PathBar.tscn" id="5_5h450"]
 [ext_resource type="PackedScene" uid="uid://cg24yt2oqqt4l" path="res://toolkit/CreateMenu.tscn" id="6_jsqx7"]
-[ext_resource type="PackedScene" uid="uid://decpusnoqjmfc" path="res://toolkit/DropMenu.tscn" id="7_d0tk7"]
-[ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="8_6ppq2"]
+[ext_resource type="PackedScene" uid="uid://decpusnoqjmfc" path="res://toolkit/ViewMenu.tscn" id="7_d0tk7"]
+[ext_resource type="PackedScene" uid="uid://b734ksn8ilqoi" path="res://toolkit/CloseButton.tscn" id="8_iguvb"]
 [ext_resource type="Script" uid="uid://dxumdyb2awpiy" path="res://lib/content_grid.gd" id="9_tggud"]
 [ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/icons/folder.svg" id="10_1aema"]
 
@@ -46,26 +45,14 @@ theme = ExtResource("1_l0ium")
 script = ExtResource("2_bpccl")
 
 [node name="Wallpaper" type="TextureRect" parent="." unique_id=939065561]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("3_75xxu")
 expand_mode = 1
 stretch_mode = 6
-
-[node name="Blur" type="Panel" parent="." unique_id=2048489814]
-material = SubResource("ShaderMaterial_f3md2")
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ha426")
 
 [node name="Background" type="PanelContainer" parent="." unique_id=335909081]
 modulate = Color(0, 0, 0, 0.588235)
@@ -75,6 +62,17 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="Blur" type="Panel" parent="." unique_id=2048489814]
+visible = false
+material = SubResource("ShaderMaterial_f3md2")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ha426")
 
 [node name="Content" type="MarginContainer" parent="." unique_id=969708923]
 clip_contents = true
@@ -124,12 +122,8 @@ offset_right = 40.0
 offset_bottom = 23.0
 text = "Opacity"
 
-[node name="Close" type="Button" parent="Content/Container/TopBar" unique_id=94183406]
-custom_minimum_size = Vector2(32, 32)
+[node name="Close" parent="Content/Container/TopBar" unique_id=1011518309 instance=ExtResource("8_iguvb")]
 layout_mode = 2
-icon = ExtResource("8_6ppq2")
-alignment = 2
-icon_alignment = 1
 
 [node name="Center" type="ScrollContainer" parent="Content/Container" unique_id=1556086520]
 layout_mode = 2
@@ -163,4 +157,3 @@ stretch_mode = 5
 
 [connection signal="gui_input" from="Content" to="." method="_on_content_gui_input"]
 [connection signal="value_changed" from="Content/Container/TopBar/Opacity" to="." method="_opacity_slider"]
-[connection signal="pressed" from="Content/Container/TopBar/Close" to="." method="close"]
