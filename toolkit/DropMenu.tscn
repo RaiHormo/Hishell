@@ -4,11 +4,8 @@
 [ext_resource type="Script" uid="uid://dlqtt27645lnf" path="res://toolkit/drop_menu.gd" id="1_puvff"]
 
 [node name="ViewMenu" type="Button" unique_id=1796936364]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -1005.0
-offset_bottom = -681.0
+offset_right = 53.0
+offset_bottom = 39.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_bk8fn")

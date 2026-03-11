@@ -24,6 +24,7 @@ func show_path(path: String):
 
 func link_window(with: FolderWindow):
 	window = with
+	show_path(window.location)
 
 func _on_breadcrumb_pressed() -> void:
 	var node: Button = get_viewport().gui_get_focus_owner()

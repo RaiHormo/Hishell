@@ -1,16 +1,9 @@
-extends Button
+extends ButtonComponent
 
-var window: FolderWindow
 @onready var dropdown: PanelContainer = $Dropdown
 
 func _ready() -> void:
 	dropdown.hide()
-
-func link_window(with: FolderWindow):
-	window = with
-
-func send(message: String, value: Variant):
-	window.message(message, value)
 
 func toggle(toggled_on: bool) -> void:
 	if toggled_on:

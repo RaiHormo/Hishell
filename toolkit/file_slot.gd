@@ -1,7 +1,7 @@
 extends GridContainer
 class_name FileSlot
 
-var window: FolderWindow
+var window: BaseWindow
 var filename: String
 @onready var icon: TextureRect = $Icon
 @onready var label: Label = $Label
