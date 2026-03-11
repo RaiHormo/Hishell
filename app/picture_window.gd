@@ -1,4 +1,4 @@
-extends FolderWindow
+extends BaseWindow
 class_name PictureWindow
 
 func open():

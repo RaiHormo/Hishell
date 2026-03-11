@@ -1,15 +1,15 @@
-[gd_scene load_steps=3 format=3 uid="uid://bxbfm1054xgto"]
+[gd_scene format=3 uid="uid://bxbfm1054xgto"]
 
-[ext_resource type="Script" uid="uid://dsrea4s4qouf4" path="res://lib/file_slot.gd" id="1_a3bxt"]
+[ext_resource type="Script" uid="uid://dsrea4s4qouf4" path="res://toolkit/file_slot.gd" id="1_a3bxt"]
 [ext_resource type="Texture2D" uid="uid://dre7siy8ne5xf" path="res://assets/icon.svg" id="1_lhbmk"]
 
-[node name="Slot" type="GridContainer"]
+[node name="Slot" type="GridContainer" unique_id=1414198826]
 offset_right = 64.0
 offset_bottom = 91.0
 theme_override_constants/h_separation = 8
 script = ExtResource("1_a3bxt")
 
-[node name="Icon" type="TextureRect" parent="."]
+[node name="Icon" type="TextureRect" parent="." unique_id=1961040124]
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 size_flags_horizontal = 3
@@ -18,7 +18,7 @@ texture = ExtResource("1_lhbmk")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Button" type="Button" parent="Icon"]
+[node name="Button" type="Button" parent="Icon" unique_id=24559749]
 show_behind_parent = true
 layout_mode = 0
 offset_left = -2.0
@@ -27,7 +27,7 @@ offset_right = 66.0
 offset_bottom = 93.0
 action_mode = 0
 
-[node name="Label" type="Label" parent="."]
+[node name="Label" type="Label" parent="." unique_id=302973781]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 1
@@ -36,7 +36,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
 
-[node name="Separator" type="VSeparator" parent="."]
+[node name="Separator" type="VSeparator" parent="." unique_id=4825031]
 modulate = Color(1, 1, 1, 0)
 layout_mode = 2
 theme_override_constants/separation = 12

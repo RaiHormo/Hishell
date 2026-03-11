@@ -1,4 +1,4 @@
-[gd_resource type="Theme" load_steps=10 format=3 uid="uid://vwqrw53ttwhu"]
+[gd_resource type="Theme" format=3 uid="uid://vwqrw53ttwhu"]
 
 [ext_resource type="Texture2D" uid="uid://bjgmra3wsayvr" path="res://assets/icons/file.svg" id="1_3044f"]
 [ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/icons/folder.svg" id="1_njmry"]
@@ -6,16 +6,52 @@
 [ext_resource type="Texture2D" uid="uid://ckcbj03340fxp" path="res://assets/icons/picture.svg" id="3_3044f"]
 [ext_resource type="Texture2D" uid="uid://dcjrf1rieb4cc" path="res://assets/icons/text.svg" id="4_x64wf"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ha426"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3044f"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0, 0, 0, 0)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x64wf"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.08627451)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_comd3"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(1, 1, 1, 0.39215687)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ng6j3"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
 bg_color = Color(0.133333, 0.133333, 0.133333, 1)
 corner_radius_top_left = 24
 corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
-shadow_color = Color(0, 0, 0, 0.584314)
+shadow_color = Color(0, 0, 0, 0.19215687)
 shadow_size = 12
+shadow_offset = Vector2(0, 4)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ng6j3"]
 content_margin_left = 12.0
@@ -37,7 +73,11 @@ shadow_color = Color(0, 0, 0, 0.188235)
 shadow_size = 10
 
 [resource]
-Button/styles/normal = SubResource("StyleBoxEmpty_ha426")
+Button/colors/font_color = Color(1, 1, 1, 1)
+Button/styles/disabled = SubResource("StyleBoxFlat_3044f")
+Button/styles/hover = SubResource("StyleBoxFlat_x64wf")
+Button/styles/normal = SubResource("StyleBoxFlat_3044f")
+Button/styles/pressed = SubResource("StyleBoxFlat_comd3")
 FlowContainer/constants/h_separation = 8
 FlowContainer/constants/v_separation = 8
 Icons/icons/file = ExtResource("1_3044f")

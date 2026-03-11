@@ -1,11 +1,10 @@
 extends Control
-class_name FolderWindow
+class_name BaseWindow
 
 @export var location:= "user://":
 	set(val):
 		location = System.abs_path(val)
 		if active:
-			parse_folder()
 			if has_node("%PathBar"): %PathBar.show_path(location)
 			if state == STATE_WINDOWED:
 				resize(get_optimal_size())
@@ -19,9 +18,6 @@ var parent: Viewport
 @export var draggable = true
 var use_windows:= true
 var prev_size: Vector2
-var files: PackedStringArray
-var folders: PackedStringArray
-#@onready var decorations: Control = $Decorations
 @onready var background = $Background
 var drag_mouse_pos: Vector2
 var active := false
@@ -39,6 +35,7 @@ func _ready() -> void:
 	modulate = Color.TRANSPARENT
 	$Content.hide()
 	$Splash.show()
+	theme = System.theme
 	set_tweened("modulate", Color.WHITE)
 	set_tweened("scale", Vector2.ONE)
 	var timer = get_tree().create_timer(animation_speed)
@@ -54,8 +51,13 @@ func _ready() -> void:
 	open()
 
 func open():
-	await parse_folder()
 	setup_window()
+
+func link_components(node: Node = self):
+	for i in node.get_children():
+		if i.has_method("link_window"):
+			i.link_window(self)
+		link_components(i)
 
 func setup_window():
 	prev_size = get_optimal_size()
@@ -68,29 +70,12 @@ func setup_window():
 	#wrap_controls = true
 	update_layoyt()
 	parent.connect("size_changed", _on_size_changed)
-	if has_node("%PathBar"):
-		%PathBar.window = self
-		%PathBar.show_path(location)
-	if has_node("%ViewMenu"):
-		%ViewMenu.window = self
-		%ViewMenu.do_connections()
+	link_components()
 	active = true
 	window_ready.emit()
 	
 
 func _process(_delta: float) -> void:
-	#var i = 0
-	#while decorations.get_child_count() < get_embedded_subwindows().size():
-		#var dec = decorations.get_child(0).duplicate()
-		#decorations.add_child(dec)
-	#for dec in decorations.get_children():
-		#dec.hide()
-	#for window in get_embedded_subwindows():
-		#var dec = decorations.get_child(i)
-		#dec.position = window.position
-		#dec.size = window.size
-		#dec.show()
-		#i += 1
 	match state:
 		STATE_LOADING:
 			pivot_offset = size/2
@@ -162,40 +147,8 @@ func update_layoyt():
 		if has_node("Wallpaper"): $Wallpaper.hide()
 		if has_node("Blur"): $Blur.show()
 
-func parse_folder():
-	var grid = %Grid
-	if not is_instance_valid(grid): return
-	if location[-1] != '/': location += '/'
-	if not DirAccess.dir_exists_absolute(location):
-		grid.hide()
-		title = "404"
-		push_error("Folder "+location+ " wasn't found")
-		return
-	var location_parts = location.split("/", false)
-	title = location_parts[-1] if not (location_parts.is_empty() or location_parts[-1].is_empty()) else location
-	name = title
-	files = DirAccess.get_files_at(location).duplicate()
-	folders = DirAccess.get_directories_at(location).duplicate()
-	if DirAccess.get_open_error():
-		title = "Can't access this folder"
-		return
-	grid.show()
-	for i in grid.get_children(): i.free()
-	while grid.get_child_count() < files.size() + folders.size():
-		var slot = preload("res://lib/FileSlot.tscn").instantiate()
-		grid.add_child(slot)
-		slot.window = self
-	var i := 0
-	for slot in grid.get_children():
-		slot.set_to("")
-	for folder in folders:
-		var slot = grid.get_child(i)
-		slot.set_to(folder, System.abs_path(location)+folder)
-		i += 1
-	for file in files:
-		var slot = grid.get_child(i)
-		slot.set_to(file, System.abs_path(location)+file)
-		i += 1
+func message(type: String, value: Variant):
+	call(type, value)
 
 func navigate(path: String, force_local:= false):
 	var foc = parent.gui_get_focus_owner()
@@ -215,29 +168,39 @@ func navigate(path: String, force_local:= false):
 			await System.launch(path, foc.global_position + foc.size/2, System.root_window())
 			#_on_close_requested()
 
-func _on_close_requested() -> void:
-	set_tweened("modulate", Color.TRANSPARENT)
-	await resize(Vector2(200,200), origin)
-	if is_root_window():
-		get_tree().quit()
-	queue_free()
-
-func _on_maximize_pressed() -> void:
-	match state:
-		STATE_MAXIMIZED:
-			if not is_root_window():
-				get_tree().root.remove_child(self)
-				System.root_window().add_child(self)
-			state = STATE_WINDOWED
-			resize(prev_size, center_position())
-			update_layoyt()
-		_:
+func window_control(msg: String):
+	match msg:
+		"maximize":
 			prev_size = size
 			state = STATE_MAXIMIZED
 			var tree = get_tree()
 			get_parent().remove_child(self)
 			tree.root.add_child(self)
 			update_layoyt()
+		"unmaximize":
+			if not is_root_window():
+				get_tree().root.remove_child(self)
+				System.root_window().add_child(self)
+			state = STATE_WINDOWED
+			resize(prev_size, center_position())
+			update_layoyt()
+		"maximize_toggle":
+			if STATE_MAXIMIZED: message("window_control", "unmaximize")
+			else: message("window_control", "maximize")
+		"close": close()
+
+func create(type: String):
+	match type:
+		"folder":
+			var dir = DirAccess.open(location)
+			dir.make_dir("New Folder")
+
+func close() -> void:
+	set_tweened("modulate", Color.TRANSPARENT)
+	await resize(Vector2(200,200), origin)
+	if is_root_window():
+		get_tree().quit()
+	queue_free()
 
 func resize(siz: Vector2, pos: Vector2 = position):
 	pos = limit_pos(pos, siz)
@@ -261,21 +224,7 @@ func center_position():
 
 func get_optimal_size():
 	var siz:= Vector2i(400, 300)
-	var number_of_files = folders.size() + files.size()
-	print(number_of_files)
-	if number_of_files > 2: siz.x += 200
-	if number_of_files > 4: siz.y += 100
-	if number_of_files > 8: siz.y += 200; siz.x += 200;
-	if number_of_files > 12: siz.y += 200
-	if number_of_files > 20: siz.y += 200
-	if number_of_files > 40: siz.x += 300
-	prev_size = siz
-	print(siz)
-	if parent != null:
-		siz.x = min(siz.x, parent.get_visible_rect().size.x - 20)
-		siz.y = min(siz.y, parent.get_visible_rect().size.y - 50)
 	return siz
-
 
 func _on_content_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

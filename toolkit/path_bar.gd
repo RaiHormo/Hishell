@@ -22,6 +22,9 @@ func show_path(path: String):
 	$Edit.text = path
 	$Breadcrumbs.get_children()[-1].set_pressed_no_signal(true)
 
+func link_window(with: FolderWindow):
+	window = with
+
 func _on_breadcrumb_pressed() -> void:
 	var node: Button = get_viewport().gui_get_focus_owner()
 	if path_folders[node.get_index()-1] == path_folders[-1]:

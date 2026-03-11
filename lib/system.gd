@@ -15,11 +15,12 @@ var file_extensions: Dictionary[StringName, PackedStringArray] = {
 	"text": ["txt", "md", "cfg", "html", "log", "sh", "ini", "csv", "tres"]
 }
 var file_associations: Dictionary[StringName, String] = {
-	"folder": "res://lib/FolderWindow.tscn",
-	"picture": "res://lib/PictureWindow.tscn",
+	"folder": "res://app/FolderWindow.tscn",
+	"picture": "res://app/PictureWindow.tscn",
 	"unknown": "",
 	"invalid": "",
 }
+var theme: Theme = preload("res://assets/themes/Default.tres")
 
 func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_tree().root, maximized:= false):
 	var runner = file_associations.get(get_file_type(path))

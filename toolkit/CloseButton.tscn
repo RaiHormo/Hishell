@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://b734ksn8ilqoi"]
+
+[ext_resource type="Texture2D" uid="uid://cmvq2pxl6v1c0" path="res://assets/circle.svg" id="1_6ogrb"]
+[ext_resource type="Script" uid="uid://cncxbcmxlhlrf" path="res://toolkit/close_button.gd" id="2_pbdge"]
+
+[node name="Close" type="Button" unique_id=1296484757]
+custom_minimum_size = Vector2(32, 32)
+icon = ExtResource("1_6ogrb")
+alignment = 2
+icon_alignment = 1
+script = ExtResource("2_pbdge")
+
+[connection signal="pressed" from="." to="." method="close"]

@@ -8,7 +8,6 @@ var filename: String
 @onready var button: Button = $Icon/Button
 var thread: Thread = null
 
-
 var is_folder:= false
 var icon_size:= 64:
 	set(val):
@@ -17,6 +16,9 @@ var icon_size:= 64:
 		update_layout.call_deferred()
 	get:
 		return int(icon.custom_minimum_size.x)
+
+func link_window(with: FolderWindow):
+	window = with
 
 func set_to(new_name: String, path: String = ""):
 	if path != "":

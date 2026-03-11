@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cy6q1wyost6dp"]
+[gd_scene format=3 uid="uid://cy6q1wyost6dp"]
 
-[ext_resource type="Script" uid="uid://c33n7eulwsjao" path="res://lib/path_bar.gd" id="1_7u6fd"]
+[ext_resource type="Script" uid="uid://c33n7eulwsjao" path="res://toolkit/path_bar.gd" id="1_7u6fd"]
 
-[node name="PathBar" type="ScrollContainer"]
+[node name="PathBar" type="ScrollContainer" unique_id=2048467433]
 self_modulate = Color(1, 1, 1, 0)
 layout_direction = 3
 anchors_preset = 15
@@ -17,11 +17,11 @@ follow_focus = true
 vertical_scroll_mode = 0
 script = ExtResource("1_7u6fd")
 
-[node name="Breadcrumbs" type="HBoxContainer" parent="."]
+[node name="Breadcrumbs" type="HBoxContainer" parent="." unique_id=1053158440]
 layout_direction = 2
 layout_mode = 2
 
-[node name="Path0" type="Button" parent="Breadcrumbs"]
+[node name="Path0" type="Button" parent="Breadcrumbs" unique_id=1419724437]
 visible = false
 custom_minimum_size = Vector2(42, 42)
 layout_mode = 2
@@ -29,7 +29,7 @@ toggle_mode = true
 text = "Path"
 expand_icon = true
 
-[node name="Edit" type="LineEdit" parent="."]
+[node name="Edit" type="LineEdit" parent="." unique_id=288969559]
 visible = false
 layout_direction = 2
 layout_mode = 2
