@@ -2,6 +2,7 @@ extends Node
 class_name Thumbnail
 
 static func get_icon_for(path: String, theme: Control) -> Texture2D:
+	path = System.abs_path(path)
 	var is_folder = DirAccess.dir_exists_absolute(path)
 	if is_folder:
 		var dir = DirAccess.open(path)
@@ -22,5 +23,6 @@ static func load_image(path: String):
 	#var thread = Thread.new()
 	#thread.start(load_image)
 	#await thread.wait_to_finish()
+	path = System.abs_path(path)
 	var img = Image.load_from_file(path)
 	return ImageTexture.create_from_image(img)

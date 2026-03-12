@@ -6,26 +6,32 @@ class_name BaseWindow
 		location = System.rel_path(val)
 		if active:
 			if has_node("%PathBar"): %PathBar.show_path(location)
-			if state == STATE_WINDOWED:
-				resize(get_optimal_size())
+			#if state == STATE_WINDOWED:
+				#resize(get_optimal_size())
 			location_changed(val)
 enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING, STATE_RESIZE}
 var state:= STATE_LOADING
 var title: String
 var origin: Vector2
 var open_pos: Vector2
-var parent: Viewport
+var viewport: Viewport
+var parent: BaseWindow = null
 @export var animation_speed:= 0.3
 @export var draggable = true
 var use_windows:= true
 var prev_size: Vector2
-@onready var background = $Background
+@onready var splash: Control  = $Splash
+@onready var content: Control = $Content
+@onready var background: Control  = $Blur
 var drag_mouse_pos: Vector2
 var active := false
+var resizable:= 0
 signal window_ready
 
+const resize_margin = 24
+
 func _ready() -> void:
-	size = Vector2(200, 200)
+	set_deferred("size", Vector2(200, 200))
 	if origin != Vector2.ZERO:
 		position = origin - Vector2(100, 100)
 	else: position = center_position()
@@ -34,13 +40,17 @@ func _ready() -> void:
 	#borderless = true
 	scale = Vector2(0.5, 0.5)
 	modulate = Color.TRANSPARENT
-	$Content.hide()
-	$Splash.show()
+	content.hide()
+	title = location.split("/")[-1]
+	splash.show()
+	if splash.has_node("Icon"):
+		splash.get_node("Icon").texture = await Thumbnail.get_icon_for(location, self)
+		if splash.has_node("Icon/Label"):
+			splash.get_node("Icon/Label").text = title
 	theme = System.theme
 	set_tweened("modulate", Color.WHITE)
 	set_tweened("scale", Vector2.ONE)
 	var timer = get_tree().create_timer(animation_speed)
-	if is_root_window(): draggable = false
 	if draggable:
 		drag_mouse_pos = size/2
 		while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
@@ -66,14 +76,16 @@ func link_components(node: Node = self):
 func setup_window():
 	prev_size = get_optimal_size()
 	if not is_root_window():
-		await resize(prev_size, open_pos - prev_size/2)
+		resize(prev_size, open_pos - prev_size/2)
 		state = STATE_WINDOWED
 	else: state = STATE_MAXIMIZED
-	$Splash.hide()
-	$Content.show()
+	splash.hide()
+	content.show()
 	#wrap_controls = true
 	_update_layout()
-	parent.connect("size_changed", _on_size_changed)
+	if viewport != null:
+		viewport.connect("size_changed", _on_size_changed)
+		focus_entered.connect(focus_window)
 	link_components()
 	active = true
 	window_ready.emit()
@@ -84,16 +96,40 @@ func _process(_delta: float) -> void:
 		STATE_LOADING:
 			pivot_offset = size/2
 		STATE_WINDOWED:
-			pass
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT): return
+			var cursor_pos = get_viewport().get_mouse_position() - position
+			if (
+				(cursor_pos.x > size.x - resize_margin and cursor_pos.x < size.x) 
+				and (cursor_pos.y > size.y - resize_margin and cursor_pos.y < size.y)
+			):
+				resizable = 3
+				content.mouse_default_cursor_shape = Control.CURSOR_FDIAGSIZE
+			elif cursor_pos.x > size.x - resize_margin and cursor_pos.x < size.x:
+				content.mouse_default_cursor_shape = Control.CURSOR_HSIZE
+				resizable = 1
+			elif cursor_pos.y > size.y - resize_margin and cursor_pos.y < size.y:
+				content.mouse_default_cursor_shape = Control.CURSOR_VSIZE
+				resizable = 2
+			elif resizable > 0: 
+				content.mouse_default_cursor_shape = Control.CURSOR_ARROW
+				resizable = 0
+			if resizable > 0 and Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				state = STATE_RESIZE
 		STATE_DRAG:
 			pivot_offset = get_local_mouse_position()
-			position = parent.get_mouse_position() - drag_mouse_pos
+			position = viewport.get_mouse_position() - drag_mouse_pos
 			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				end_drag()
 		STATE_RESIZE:
-			$Content.mouse_default_cursor_shape = CursorShape.CURSOR_FDIAGSIZE
-			size = get_viewport().get_mouse_position()-position
-			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+			match resizable:
+				1:
+					size.x = get_viewport().get_mouse_position().x-position.x
+				2:
+					size.y = get_viewport().get_mouse_position().y-position.y
+				_:
+					$Content.mouse_default_cursor_shape = CursorShape.CURSOR_FDIAGSIZE
+					size = get_viewport().get_mouse_position()-position
+			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				state = STATE_WINDOWED
 				$Content.mouse_default_cursor_shape = CursorShape.CURSOR_ARROW
 	
@@ -116,7 +152,7 @@ func enter_drag(mouse_pos: Vector2):
 	set_tweened("scale", Vector2(0.9, 0.9))
 	state = STATE_DRAG
 	drag_mouse_pos = mouse_pos
-	move_to_front()
+	focus_window()
 
 func end_drag():
 	state = STATE_WINDOWED
@@ -129,10 +165,14 @@ func _on_size_changed() -> void:
 
 func _update_layout():
 	if state == STATE_MAXIMIZED:
-		resize(parent.get_visible_rect().size, Vector2i(0,0))
+		resize(viewport.get_visible_rect().size, Vector2i(0,0))
 		use_windows = true
+		draggable = false
+		background.hide()
 	else:
 		use_windows = false
+		draggable = true
+		background.show()
 	if state == STATE_WINDOWED:
 		prev_size = size
 	if position.x < 0:
@@ -152,40 +192,40 @@ func message(type: String, value: Variant):
 
 func navigate(path: String, force_local:= false):
 	path = System.abs_path(path)
-	var foc = parent.gui_get_focus_owner()
+	var foc = viewport.gui_get_focus_owner()
 	if use_windows and not force_local:
 		System.launch(path, foc.global_position + foc.size/2, self)
 	else:
-		location = path
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			await System.wait(animation_speed)
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				System.launch(path, get_viewport().get_mouse_position(), System.root_window())
+			else:
+				location = path
+		else:
+			location = path
 
 func window_control(msg: String):
 	match msg:
 		"maximize":
 			prev_size = size
 			state = STATE_MAXIMIZED
+			draggable = false
 			var tree = get_tree()
 			get_parent().remove_child(self)
 			tree.root.add_child(self)
-			background.hide()
 			_update_layout()
 		"unmaximize":
 			if not is_root_window():
 				get_tree().root.remove_child(self)
 				System.root_window().add_child(self)
 			state = STATE_WINDOWED
-			background.show()
 			resize(prev_size, center_position())
 			_update_layout()
 		"maximize_toggle":
-			if STATE_MAXIMIZED: message("window_control", "unmaximize")
+			if state == STATE_MAXIMIZED: message("window_control", "unmaximize")
 			else: message("window_control", "maximize")
 		"close": close()
-
-func create(type: String):
-	match type:
-		"folder":
-			var dir = DirAccess.open(location)
-			dir.make_dir("New Folder")
 
 func close() -> void:
 	set_tweened("modulate", Color.TRANSPARENT)
@@ -208,11 +248,10 @@ func _opacity_slider(value: float) -> void:
 	background.modulate.a = value/100
 
 func is_root_window() -> bool:
-	if self == System.root_window(): return true
-	else: return false
+	return parent == null
 
 func center_position():
-	return parent.get_visible_rect().get_center() - Vector2(prev_size/2)
+	return viewport.get_visible_rect().get_center() - Vector2(prev_size/2)
 
 func get_optimal_size():
 	var siz:= Vector2i(400, 300)
@@ -221,7 +260,16 @@ func get_optimal_size():
 func _on_content_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and state == STATE_WINDOWED:
-			enter_drag(get_local_mouse_position())
+			focus_window()
+			if resizable > 0:
+				state = STATE_RESIZE
+			else:
+				enter_drag(get_local_mouse_position())
 			$Content.grab_focus()
 		elif Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and state == STATE_WINDOWED:
 			state = STATE_RESIZE
+
+func focus_window():
+	System.focused_window = self
+	move_to_front()
+	parent.move_child(self, -1)

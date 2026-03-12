@@ -6,12 +6,14 @@ var window: BaseWindow
 func show_path(path: String):
 	for i in $Breadcrumbs.get_children():
 		if i.name != "Path0": i.queue_free()
-	path = path.replace(System.root, System.root_name)
-	print(System.root_window().location.replace(System.root, System.root_name))
-	var root_folders = System.root_window().location.split("/")
+	path = System.rel_path(path)
 	path_folders = path.split("/", false)
+	var root_folders: PackedStringArray
+	if window.parent != null: 
+		root_folders = window.parent.location.split("/")
+		print(root_folders.size(), " ",path_folders.size())
+		if root_folders.size() >= path_folders.size(): root_folders.clear()
 	for i in path_folders:
-		if i in root_folders: continue
 		var dup = $Breadcrumbs/Path0.duplicate()
 		if i == System.root_name:
 			dup.icon = preload("res://assets/higameos_logo.png")
@@ -19,9 +21,12 @@ func show_path(path: String):
 		else:
 			dup.text = i
 		$Breadcrumbs.add_child(dup)
-		dup.show()
+		if i in root_folders: dup.hide()
+		else: dup.show()
 	$Edit.text = path
 	$Breadcrumbs.get_children()[-1].set_pressed_no_signal(true)
+	await System.wait(0.01)
+	set_deferred("scroll_horizontal", 999999)
 
 func link_window(with: BaseWindow):
 	window = with
@@ -45,6 +50,7 @@ func _on_breadcrumb_pressed() -> void:
 				break
 		print(new_location)
 		window.navigate(System.abs_path(new_location), true)
+		show_path(new_location)
 
 func _on_edit_editing_toggled(toggled_on: bool) -> void:
 	if not toggled_on:

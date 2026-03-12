@@ -22,6 +22,8 @@ var file_associations: Dictionary[StringName, String] = {
 }
 var theme: Theme = preload("res://assets/themes/Default.tres")
 
+var focused_window: BaseWindow = null
+
 func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_tree().root, maximized:= false):
 	path = abs_path(path)
 	var runner = file_associations.get(get_file_type(path))
@@ -30,7 +32,9 @@ func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_t
 	window.location = path
 	window.origin = position
 	window.open_pos = position
-	window.parent = parent.get_viewport()
+	if parent is BaseWindow:
+		window.parent = parent
+	window.viewport = parent.get_viewport()
 	parent.add_child(window)
 	if maximized: window.state = FolderWindow.STATE_MAXIMIZED
 	await window.window_ready

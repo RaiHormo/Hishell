@@ -3,12 +3,15 @@ class_name FolderWindow
 
 var files: PackedStringArray
 var folders: PackedStringArray
+@onready var wallpaper = $Content/Wallpaper
+@onready var error = $Content/Error
 
 func open():
 	await parse_folder()
 	setup_window()
 
 func parse_folder():
+	error.hide()
 	var grid = %Grid
 	if not is_instance_valid(grid): return
 	var abs_location = System.abs_path(location)
@@ -16,6 +19,8 @@ func parse_folder():
 	if not DirAccess.dir_exists_absolute(abs_location):
 		grid.hide()
 		title = "404"
+		error.text = "404"
+		error.show()
 		push_error("Folder "+abs_location+ " wasn't found")
 		return
 	var location_parts = abs_location.split("/", false)
@@ -24,7 +29,8 @@ func parse_folder():
 	files = DirAccess.get_files_at(abs_location).duplicate()
 	folders = DirAccess.get_directories_at(abs_location).duplicate()
 	if DirAccess.get_open_error():
-		title = "Can't access this folder"
+		error.text = str(DirAccess.get_open_error())
+		error.show()
 		return
 	grid.show()
 	for i in grid.get_children(): i.queue_free()
@@ -47,13 +53,10 @@ func parse_folder():
 	
 	var background_file = ".wallpaper.png"
 	if FileAccess.file_exists(abs_location+'/'+background_file):
-		$Wallpaper.texture = Thumbnail.load_image(abs_location+'/'+background_file)
-		$Wallpaper.show()
-		$Blur.hide()
+		wallpaper.texture = Thumbnail.load_image(abs_location+'/'+background_file)
+		wallpaper.show()
 	else:
-		$Wallpaper.hide()
-		$Blur.show()
-		
+		wallpaper.hide()
 
 func get_optimal_size():
 	var siz:= Vector2i(400, 300)
@@ -67,10 +70,21 @@ func get_optimal_size():
 	if number_of_files > 40: siz.x += 300
 	prev_size = siz
 	print(siz)
-	if parent != null:
-		siz.x = min(siz.x, parent.get_visible_rect().size.x - 20)
-		siz.y = min(siz.y, parent.get_visible_rect().size.y - 50)
+	if viewport != null:
+		siz.x = min(siz.x, viewport.get_visible_rect().size.x - 20)
+		siz.y = min(siz.y, viewport.get_visible_rect().size.y - 50)
 	return siz
 
 func location_changed(_path: String):
+	parse_folder()
+
+func create(type: String):
+	var path = System.abs_path(location)
+	match type:
+		"folder":
+			var dir = DirAccess.open(path)
+			dir.make_dir("New Folder")
+		"text_file":
+			var file = FileAccess.open(path+"/New File.txt", FileAccess.WRITE)
+			file.close()
 	parse_folder()

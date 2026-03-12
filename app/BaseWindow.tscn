@@ -90,7 +90,7 @@ size_flags_vertical = 3
 
 [node name="TopBar" type="HBoxContainer" parent="Content/Container" unique_id=529290245]
 layout_mode = 2
-theme_override_constants/separation = 17
+theme_type_variation = &"Header"
 
 [node name="PathBar" parent="Content/Container/TopBar" unique_id=1379175307 instance=ExtResource("5_wseob")]
 unique_name_in_owner = true

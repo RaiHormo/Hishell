@@ -2,18 +2,24 @@
 
 [ext_resource type="Script" uid="uid://c33n7eulwsjao" path="res://toolkit/path_bar.gd" id="1_7u6fd"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pynr5"]
+
 [node name="PathBar" type="ScrollContainer" unique_id=2048467433]
 self_modulate = Color(1, 1, 1, 0)
 layout_direction = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_bottom = -661.0
+offset_left = 722.0
+offset_bottom = -694.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
+size_flags_vertical = 4
 mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_pynr5")
 follow_focus = true
+horizontal_scroll_mode = 3
 vertical_scroll_mode = 0
 script = ExtResource("1_7u6fd")
 

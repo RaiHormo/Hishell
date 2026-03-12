@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cg24yt2oqqt4l" path="res://toolkit/CreateMenu.tscn" id="6_jsqx7"]
 [ext_resource type="PackedScene" uid="uid://decpusnoqjmfc" path="res://toolkit/ViewMenu.tscn" id="7_d0tk7"]
 [ext_resource type="PackedScene" uid="uid://b734ksn8ilqoi" path="res://toolkit/CloseButton.tscn" id="8_iguvb"]
+[ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="9_iguvb"]
 [ext_resource type="Script" uid="uid://dxumdyb2awpiy" path="res://lib/content_grid.gd" id="9_tggud"]
 [ext_resource type="Texture2D" uid="uid://brr7rgi1cesiv" path="res://assets/icons/folder.svg" id="10_1aema"]
 
@@ -23,6 +24,20 @@ corner_radius_top_right = 24
 corner_radius_bottom_right = 24
 corner_radius_bottom_left = 24
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_iguvb"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mhlnb"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0, 0, 0.5176471)
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f3md2"]
 
 [node name="FolderWindow" type="Control" unique_id=496038198]
@@ -33,10 +48,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -386.0
-offset_top = -226.5
-offset_right = 386.0
-offset_bottom = 226.5
+offset_left = -371.0
+offset_top = -246.0
+offset_right = 369.0
+offset_bottom = 239.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
@@ -44,27 +59,7 @@ size_flags_vertical = 4
 theme = ExtResource("1_l0ium")
 script = ExtResource("2_bpccl")
 
-[node name="Wallpaper" type="TextureRect" parent="." unique_id=939065561]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-expand_mode = 1
-stretch_mode = 6
-
-[node name="Background" type="PanelContainer" parent="." unique_id=335909081]
-modulate = Color(0, 0, 0, 0.588235)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Blur" type="Panel" parent="." unique_id=2048489814]
-visible = false
+[node name="Blur" type="PanelContainer" parent="." unique_id=456303513]
 material = SubResource("ShaderMaterial_f3md2")
 layout_mode = 1
 anchors_preset = 15
@@ -74,7 +69,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ha426")
 
-[node name="Content" type="MarginContainer" parent="." unique_id=969708923]
+[node name="Background" type="PanelContainer" parent="Blur" unique_id=335909081]
+modulate = Color(0, 0, 0, 0.588235)
+layout_mode = 2
+
+[node name="Content" type="PanelContainer" parent="." unique_id=1366185098]
+clip_children = 1
 clip_contents = true
 layout_mode = 1
 anchors_preset = 15
@@ -83,46 +83,39 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 focus_mode = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_iguvb")
+
+[node name="Wallpaper" type="TextureRect" parent="Content" unique_id=939065561]
+layout_mode = 2
+texture = ExtResource("9_iguvb")
+expand_mode = 1
+stretch_mode = 6
 
 [node name="Container" type="VBoxContainer" parent="Content" unique_id=890253656]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="TopBar" type="HBoxContainer" parent="Content/Container" unique_id=529290245]
+[node name="PanelContainer" type="PanelContainer" parent="Content/Container" unique_id=161510642]
 layout_mode = 2
-theme_override_constants/separation = 17
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_mhlnb")
 
-[node name="PathBar" parent="Content/Container/TopBar" unique_id=1379175307 instance=ExtResource("5_5h450")]
+[node name="TopBar" type="HBoxContainer" parent="Content/Container/PanelContainer" unique_id=529290245]
+layout_mode = 2
+
+[node name="PathBar" parent="Content/Container/PanelContainer/TopBar" unique_id=1379175307 instance=ExtResource("5_5h450")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="CreateMenu" parent="Content/Container/TopBar" unique_id=693203537 instance=ExtResource("6_jsqx7")]
+[node name="CreateMenu" parent="Content/Container/PanelContainer/TopBar" unique_id=693203537 instance=ExtResource("6_jsqx7")]
 layout_mode = 2
 
-[node name="ViewMenu" parent="Content/Container/TopBar" unique_id=1215969453 instance=ExtResource("7_d0tk7")]
+[node name="ViewMenu" parent="Content/Container/PanelContainer/TopBar" unique_id=1215969453 instance=ExtResource("7_d0tk7")]
 unique_name_in_owner = true
 layout_mode = 2
 
-[node name="Opacity" type="HSlider" parent="Content/Container/TopBar" unique_id=1533601879]
-visible = false
-custom_minimum_size = Vector2(60, 70)
-layout_mode = 2
-step = 5.0
-value = 90.0
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Content/Container/TopBar/Opacity" unique_id=24696461]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Label" type="Label" parent="Content/Container/TopBar/Opacity" unique_id=1308640183]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Opacity"
-
-[node name="Close" parent="Content/Container/TopBar" unique_id=1011518309 instance=ExtResource("8_iguvb")]
+[node name="Close" parent="Content/Container/PanelContainer/TopBar" unique_id=1011518309 instance=ExtResource("8_iguvb")]
 layout_mode = 2
 
 [node name="Center" type="ScrollContainer" parent="Content/Container" unique_id=1556086520]
@@ -140,6 +133,12 @@ size_flags_vertical = 3
 last_wrap_alignment = 1
 script = ExtResource("9_tggud")
 
+[node name="Error" type="Label" parent="Content" unique_id=160942569]
+visible = false
+layout_mode = 2
+text = "404"
+horizontal_alignment = 1
+
 [node name="Splash" type="CenterContainer" parent="." unique_id=1052120785]
 layout_mode = 1
 anchors_preset = 15
@@ -155,5 +154,14 @@ texture = ExtResource("10_1aema")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="Label" type="Label" parent="Splash/Icon" unique_id=789317149]
+layout_mode = 0
+offset_left = -32.0
+offset_top = 96.0
+offset_right = 121.0
+offset_bottom = 119.0
+text = "Label"
+horizontal_alignment = 1
+vertical_alignment = 1
+
 [connection signal="gui_input" from="Content" to="." method="_on_content_gui_input"]
-[connection signal="value_changed" from="Content/Container/TopBar/Opacity" to="." method="_opacity_slider"]
