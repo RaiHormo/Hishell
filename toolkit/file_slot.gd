@@ -32,7 +32,7 @@ func set_to(new_name: String, path: String = ""):
 	if "<empty>" in name:
 		label.text = ""
 	else:
-		label.text = filename
+		label.text = Meta.folder_title(path)
 	update_layout.call_deferred()
 
 

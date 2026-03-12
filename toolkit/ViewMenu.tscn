@@ -70,3 +70,5 @@ text = "Opacity"
 [connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
 [connection signal="toggled" from="." to="." method="toggle"]
 [connection signal="pressed" from="Dropdown/List/Maximize" to="." method="send" binds= ["window_control", "maximize_toggle"]]
+[connection signal="value_changed" from="Dropdown/List/IconSize" to="." method="send_value" binds= ["icon_size_slider"]]
+[connection signal="value_changed" from="Dropdown/List/Opacity" to="." method="send_value" binds= ["opacity_slider"]]

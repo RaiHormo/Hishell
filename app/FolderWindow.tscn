@@ -13,7 +13,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_f3md2"]
 shader = ExtResource("4_fe50d")
-shader_parameter/strength = 10.0
+shader_parameter/strength = 15.0000007125
 shader_parameter/sample_power = 3
 shader_parameter/is_canvas_group = true
 
@@ -70,7 +70,7 @@ grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_ha426")
 
 [node name="Background" type="PanelContainer" parent="Blur" unique_id=335909081]
-modulate = Color(0, 0, 0, 0.588235)
+modulate = Color(0, 0, 0, 0.7176471)
 layout_mode = 2
 
 [node name="Content" type="PanelContainer" parent="." unique_id=1366185098]

@@ -6,13 +6,15 @@ static func get_icon_for(path: String, theme: Control) -> Texture2D:
 	var is_folder = DirAccess.dir_exists_absolute(path)
 	if is_folder:
 		var dir = DirAccess.open(path)
-		var icon_name = ".icon.svg"
-		if dir.file_exists(icon_name):
-			return await load_image(path+"/"+icon_name)
+		var icon_name = ".icon"
+		for i in System.file_extensions["picture"]:
+			if dir.file_exists(icon_name+"."+i):
+				return await load_image(path+"/"+icon_name+"."+i)
 		return theme.get_theme_icon("folder", "Icons")
 	else:
 		match System.get_file_type(path):
 			"picture":
+				#return load_image(path)
 				return theme.get_theme_icon("picture", "Icons")
 			"text":
 				return theme.get_theme_icon("text", "Icons")

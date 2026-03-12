@@ -9,6 +9,8 @@ var folders: PackedStringArray
 func open():
 	await parse_folder()
 	setup_window()
+	if Meta.get_folder_meta(location, "Maximized", "LAUNCH"):
+		message("window_control", "maximize")
 
 func parse_folder():
 	error.hide()
@@ -50,13 +52,35 @@ func parse_folder():
 		var slot = grid.get_child(i)
 		slot.set_to(file, abs_location+file)
 		i += 1
+		
+	view_apply()
+
+func view_apply():
+	var abs_location = System.abs_path(location)
 	
-	var background_file = ".wallpaper.png"
-	if FileAccess.file_exists(abs_location+'/'+background_file):
-		wallpaper.texture = Thumbnail.load_image(abs_location+'/'+background_file)
-		wallpaper.show()
-	else:
-		wallpaper.hide()
+	wallpaper.hide()
+	var background_file = ".wallpaper"
+	for i in System.file_extensions["picture"]:
+		if FileAccess.file_exists(abs_location+'/'+background_file+"."+i):
+			wallpaper.texture = Thumbnail.load_image(abs_location+'/'+background_file+"."+i)
+			wallpaper.show()
+	
+	var grid: Container = %Grid
+	
+	match Meta.get_folder_meta(abs_location, "GridHorizontalAlign", "LAYOUT"):
+		0: grid.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+		1: grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+		2: grid.size_flags_horizontal = Control.SIZE_SHRINK_END
+		_: grid.size_flags_horizontal = Control.SIZE_FILL
+	grid.size_flags_horizontal |= Control.SIZE_EXPAND
+	match Meta.get_folder_meta(abs_location, "GridHorizontalAlign", "LAYOUT"):
+		0: grid.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
+		1: grid.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		2: grid.size_flags_vertical = Control.SIZE_SHRINK_END
+		_: grid.size_flags_vertical = Control.SIZE_FILL
+	grid.size_flags_vertical |= Control.SIZE_EXPAND
+	
+	icon_size_slider(Meta.get_folder_meta(location, "GridSize", "LAYOUT", 64))
 
 func get_optimal_size():
 	var siz:= Vector2i(400, 300)
@@ -88,3 +112,9 @@ func create(type: String):
 			var file = FileAccess.open(path+"/New File.txt", FileAccess.WRITE)
 			file.close()
 	parse_folder()
+
+func icon_size_slider(value: float) -> void:
+	%Grid.icon_size = int(value)
+	_update_layout()
+	if value != 64:
+		Meta.set_folder_meta(location, "GridSize", "LAYOUT", value)

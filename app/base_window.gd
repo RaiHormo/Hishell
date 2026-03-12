@@ -31,6 +31,7 @@ signal window_ready
 const resize_margin = 24
 
 func _ready() -> void:
+	hide()
 	set_deferred("size", Vector2(200, 200))
 	if origin != Vector2.ZERO:
 		position = origin - Vector2(100, 100)
@@ -43,6 +44,7 @@ func _ready() -> void:
 	content.hide()
 	title = location.split("/")[-1]
 	splash.show()
+	show()
 	if splash.has_node("Icon"):
 		splash.get_node("Icon").texture = await Thumbnail.get_icon_for(location, self)
 		if splash.has_node("Icon/Label"):
@@ -196,14 +198,17 @@ func navigate(path: String, force_local:= false):
 	if use_windows and not force_local:
 		System.launch(path, foc.global_position + foc.size/2, self)
 	else:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			await System.wait(animation_speed)
+		if System.get_file_type(path) == "folder":
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-				System.launch(path, get_viewport().get_mouse_position(), System.root_window())
+				await System.wait(animation_speed)
+				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+					System.launch(path, get_viewport().get_mouse_position(), parent)
+				else:
+					location = path
 			else:
 				location = path
 		else:
-			location = path
+			System.launch(path, foc.global_position + foc.size/2, parent)
 
 func window_control(msg: String):
 	match msg:
@@ -240,11 +245,7 @@ func resize(siz: Vector2, pos: Vector2 = position):
 	set_tweened("position", pos)
 	await System.wait(animation_speed)
 
-func _icon_size_slider(value: float) -> void:
-	%Grid.icon_size = int(value)
-	_update_layout()
-
-func _opacity_slider(value: float) -> void:
+func opacity_slider(value: float) -> void:
 	background.modulate.a = value/100
 
 func is_root_window() -> bool:
@@ -272,4 +273,5 @@ func _on_content_gui_input(event: InputEvent) -> void:
 func focus_window():
 	System.focused_window = self
 	move_to_front()
-	parent.move_child(self, -1)
+	if parent != null:
+		parent.move_child(self, -1)

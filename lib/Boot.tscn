@@ -1,16 +1,16 @@
 [gd_scene format=3 uid="uid://bs8jx5somwhse"]
 
-[ext_resource type="Script" uid="uid://cehwmxfa6wv2a" path="res://lib/init.gd" id="1_0l2cy"]
-[ext_resource type="Texture2D" uid="uid://bbi2rfqb6edfc" path="res://assets/higameos_logo.png" id="2_uofpy"]
+[ext_resource type="Script" uid="uid://cehwmxfa6wv2a" path="res://lib/init.gd" id="1_ndipe"]
+[ext_resource type="Texture2D" uid="uid://bbi2rfqb6edfc" path="res://assets/higameos_logo.png" id="2_q8b75"]
 
-[node name="Base" type="Control" unique_id=1861904215]
+[node name="Boot" type="Control" unique_id=1861904215]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_0l2cy")
+script = ExtResource("1_ndipe")
 
 [node name="Logo" type="TextureRect" parent="." unique_id=400781035]
 layout_mode = 1
@@ -19,5 +19,5 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_uofpy")
+texture = ExtResource("2_q8b75")
 stretch_mode = 3
