@@ -140,8 +140,10 @@ func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_l
 	
 	#Copy each file and folder into the new folder
 	var old_files : PackedStringArray = dir.get_files()
+	print(old_files)
 	for f : String in old_files:
-		if f.ends_with(".import") or f.ends_with(".uid"): continue
+		if f.ends_with(".uid"): continue
+		if f.ends_with(".import"): continue
 		DirAccess.copy_absolute(folder_to_copy + "/" + f, new_dir_path + "/" + f)
 	var old_directories : PackedStringArray = dir.get_directories()
 	for d : String in old_directories:

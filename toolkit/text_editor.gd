@@ -10,6 +10,8 @@ func init():
 	if FileAccess.file_exists(location):
 		var file : FileAccess = FileAccess.open(location, FileAccess.READ)
 		$TextEdit.text = file.get_as_text()
+	if window.state == window.STATE_LOADING:
+		window.prev_size = Vector2(600, 500)
 
 func save():
 	if FileAccess.file_exists(location):
@@ -24,6 +26,4 @@ func _on_text_edit_text_changed() -> void:
 
 func _on_update_timer_timeout() -> void:
 	send("update")
-
-func _exit_tree() -> void:
 	send("save")

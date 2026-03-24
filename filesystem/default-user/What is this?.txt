@@ -1,0 +1,21 @@
+This is HiShell, a fake OS made in godot. 
+Or maybe it would be more accurate to describe it as a file manager,
+because that's what it really is.
+
+Everything here is made out of folders. 
+The desktop? 
+It's just a folder with a .wallpaper.png inside and some metadata 
+to tell the window to maximize.
+An app is also just a folder with metadata that tell it to replace
+its contents with something else.
+Each file type also has a configured window layout that you can change.
+
+That is the basic philosophy of this thing.
+Of course this isn't a very practical project, 
+it's more of a proof of concept.
+
+There is also a lot missing from what you see here.
+You can't move or rename files, but that is something I wanna add.
+
+You can find the code for this project at 
+https://github.com/RaiHormo/Hishell
