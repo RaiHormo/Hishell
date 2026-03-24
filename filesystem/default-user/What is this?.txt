@@ -17,5 +17,9 @@ it's more of a proof of concept.
 There is also a lot missing from what you see here.
 You can't move or rename files, but that is something I wanna add.
 
+Why is it called HiShell?
+It's a spiritual successor to the fake OSes I used to do in scratch
+as a kid called "HigameOS".
+
 You can find the code for this project at 
 https://github.com/RaiHormo/Hishell
