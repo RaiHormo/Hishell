@@ -49,7 +49,6 @@ func _ready() -> void:
 	name = title
 	splash.show()
 	if viewport != null:
-		viewport.connect("size_changed", _on_size_changed)
 		focus_entered.connect(focus_window)
 	show()
 	if splash.has_node("Icon"):
@@ -195,7 +194,7 @@ func end_drag():
 	set_tweened("scale", Vector2.ONE)
 	set_tweened("position", limit_pos(position))
 
-func _on_size_changed() -> void:
+func size_changed() -> void:
 	send("update_layout")
 
 func update_layout():
