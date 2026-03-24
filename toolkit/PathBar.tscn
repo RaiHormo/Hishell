@@ -10,8 +10,8 @@ layout_direction = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 722.0
-offset_bottom = -694.0
+offset_left = 721.0
+offset_bottom = -678.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 3
@@ -26,6 +26,7 @@ script = ExtResource("1_7u6fd")
 [node name="Breadcrumbs" type="HBoxContainer" parent="." unique_id=1053158440]
 layout_direction = 2
 layout_mode = 2
+size_flags_horizontal = 3
 
 [node name="Path0" type="Button" parent="Breadcrumbs" unique_id=1419724437]
 visible = false

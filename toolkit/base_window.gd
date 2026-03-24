@@ -29,6 +29,7 @@ var prev_size: Vector2 = Vector2(450, 300):
 var drag_mouse_pos: Vector2
 var active := false
 var resizable:= 0
+var config: ConfigFile
 signal window_ready
 
 const resize_margin = 24
@@ -45,7 +46,7 @@ func _ready() -> void:
 	scale = Vector2(0.5, 0.5)
 	modulate = Color.TRANSPARENT
 	content.hide()
-	title = location.split("/")[-1]
+	title = location.split("/", false)[-1]
 	name = title
 	splash.show()
 	if viewport != null:
@@ -62,7 +63,7 @@ func _ready() -> void:
 	if draggable:
 		drag_mouse_pos = size/2
 		while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			position = get_viewport().get_mouse_position() - size/2
+			position = get_viewport().get_mouse_position() - size/2 - parent.position
 			await System.wait()
 		open_pos = get_viewport().get_mouse_position()
 		end_drag()
@@ -96,6 +97,20 @@ func link_components(node: Node = self):
 			components.set(i.name, i)
 		link_components(i)
 
+func create_config(type: String):
+	if not FileAccess.file_exists(System.abs_path(System.config_path+"layouts/default.cfg")):
+		System.dialog("Something went really wrong, default config not found.", "Error")
+		close()
+		return
+	config = System.get_config_file("layouts/default.cfg")
+	System.merge_config(System.get_config_file("layouts/"+type+".cfg"), config)
+	if config == null: 
+		close()
+		return
+	var meta = Meta.get_folder_config(location)
+	if meta != null:
+		System.merge_config(meta, config)
+
 func create_content(type := System.get_file_type(location)):
 	if type == "unknown":
 		System.dialog("No handler for this filetype exists")
@@ -105,19 +120,20 @@ func create_content(type := System.get_file_type(location)):
 		System.dialog("Directory isn't valid: ", location)
 		close()
 		return
-	var layout : ConfigFile = System.get_config_file("layouts/"+type)
-	if layout == null: 
-		close()
-		return
-	for container in layout.get_section_keys("LAYOUT"):
+	create_config(type)
+	for container in config.get_section_keys("LAYOUT"):
 		var container_node = get_node_or_null("%"+container)
 		if container_node != null:
-			for i in container_node.get_children():
+			var hbox: BoxContainer = container_node.get_child(0)
+			for i in hbox.get_children():
 				i.queue_free()
-			var values: Array = layout.get_value("LAYOUT", container)
+			var values: Array = config.get_value("LAYOUT", container)
 			for value: String in values:
-				var component = (load("res://"+value+".tscn") as PackedScene).instantiate()
-				container_node.add_child(component)
+				if ResourceLoader.exists("res://"+value+".tscn"):
+					var component = (load("res://"+value+".tscn") as PackedScene).instantiate()
+					hbox.add_child(component)
+				else:
+					System.dialog("Non existant component specified: "+ value, "Error")
 
 
 func setup_window():
@@ -160,7 +176,7 @@ func _process(_delta: float) -> void:
 				state = STATE_RESIZE
 		STATE_DRAG:
 			pivot_offset = get_local_mouse_position()
-			position = viewport.get_mouse_position() - drag_mouse_pos
+			position = viewport.get_mouse_position() - drag_mouse_pos - parent.position
 			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				end_drag()
 		STATE_RESIZE:
@@ -179,8 +195,11 @@ func _process(_delta: float) -> void:
 				$Content.mouse_default_cursor_shape = CursorShape.CURSOR_ARROW
 
 func limit_pos(pos: Vector2, siz:Vector2 = size):
-	pos.x = clamp(pos.x, 0, get_viewport_rect().size.x-siz.x)
-	pos.y = clamp(pos.y, 0, get_viewport_rect().size.y-siz.y)
+	var parent_pos := Vector2.ZERO
+	if parent != null:
+		parent_pos = parent.position
+	pos.x = clamp(pos.x, -parent_pos.x, get_viewport_rect().size.x-siz.x -parent_pos.x)
+	pos.y = clamp(pos.y, -parent_pos.y, get_viewport_rect().size.y-siz.y -parent_pos.y)
 	return pos
 
 func set_tweened(property: StringName, value: Variant) -> bool:
@@ -213,35 +232,42 @@ func update_layout():
 		resize(viewport.get_visible_rect().size, Vector2i(0,0))
 		use_windows = true
 		draggable = false
-		background.hide()
+		#background.hide()
 	else:
 		use_windows = false
 		draggable = true
-		background.show()
+		#background.show()
 	if position.x < 0:
 		position.x = max(position.x, 0)
 	if position.y < 0:
 		position.y = max(position.y, 48)
 	#decorations.show()
 	
-	if has_node("%Grid"):
-		%Grid.update()
+	send("update")
+	
 	
 
 func navigate(path: String, force_local:= false):
 	path = System.abs_path(path)
 	var foc = viewport.gui_get_focus_owner()
-	if use_windows and not force_local:
-		System.launch(path, foc.global_position + foc.size/2, self)
-	else:
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			await System.wait(animation_speed)
-			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-				System.launch(path, get_viewport().get_mouse_position(), parent)
-			else:
-				navigate_in_place(path)
-		else:
+	match Meta.get_folder_meta(location, "NavigationType", "NAVIGATION"):
+		"InPlace":
 			navigate_in_place(path)
+		"Window":
+			System.launch(path, foc.global_position + foc.size/2, self)
+		_:
+			if use_windows and not force_local:
+				System.launch(path, foc.global_position + foc.size/2, self)
+			else:
+				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+					await System.wait(animation_speed)
+					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+						System.launch(path, get_viewport().get_mouse_position(), parent)
+					else:
+						navigate_in_place(path)
+				else:
+					navigate_in_place(path)
+
 
 func navigate_in_place(path: String):
 	if System.get_file_type(location) != System.get_file_type(path):
@@ -265,14 +291,14 @@ func window_control(msg: String):
 			prev_size = size
 			state = STATE_MAXIMIZED
 			draggable = false
-			var tree = get_tree()
-			get_parent().remove_child(self)
-			tree.root.add_child(self)
+			#var tree = get_tree()
+			#get_parent().remove_child(self)
+			#tree.root.add_child(self)
 			send("update_layout")
 		"unmaximize":
-			if not is_root_window():
-				get_tree().root.remove_child(self)
-				System.root_window().add_child(self)
+			#if not is_root_window():
+				#get_tree().root.remove_child(self)
+				#System.root_window().add_child(self)
 			state = STATE_WINDOWED
 			resize(prev_size, center_position())
 			send("update_layout")
@@ -282,6 +308,7 @@ func window_control(msg: String):
 		"close": close()
 
 func close() -> void:
+	await send("save")
 	cleanup_components()
 	set_tweened("modulate", Color.TRANSPARENT)
 	await resize(Vector2(200,200), origin)

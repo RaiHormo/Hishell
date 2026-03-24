@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://droo81pojeadl"]
+
+[ext_resource type="Script" uid="uid://dwathijq62tdt" path="res://toolkit/text_editor.gd" id="1_22iwq"]
+
+[node name="TextEditor" type="Control" unique_id=748031530]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_22iwq")
+metadata/_custom_type_script = "uid://bsrnxaau602d7"
+
+[node name="TextEdit" type="TextEdit" parent="." unique_id=1151891678]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+placeholder_text = "  < Empty File >"
+scroll_smooth = true
+minimap_draw = true
+minimap_width = 30
+highlight_all_occurrences = true
+draw_tabs = true
+
+[node name="UpdateTimer" type="Timer" parent="." unique_id=668370569]
+wait_time = 2.0
+
+[connection signal="text_changed" from="TextEdit" to="." method="_on_text_edit_text_changed"]
+[connection signal="timeout" from="UpdateTimer" to="." method="_on_update_timer_timeout"]

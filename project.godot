@@ -34,6 +34,10 @@ window/size/borderless=true
 window/stretch/aspect="expand"
 window/stretch/scale=1.25
 
+[editor]
+
+export/convert_text_resources_to_binary=false
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/minimize_html_build/plugin.cfg")

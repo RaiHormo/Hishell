@@ -4,7 +4,9 @@
 [ext_resource type="Script" uid="uid://d263oshk04l81" path="res://toolkit/base_window.gd" id="2_4itee"]
 [ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="3_4itee"]
 [ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="4_4itee"]
-[ext_resource type="PackedScene" uid="uid://b2m3s14iuih5f" path="res://toolkit/Header.tscn" id="5_y3hkb"]
+[ext_resource type="PackedScene" uid="uid://cy6q1wyost6dp" path="res://toolkit/PathBar.tscn" id="5_g45aw"]
+[ext_resource type="PackedScene" uid="uid://doaywkewf0aj1" path="res://toolkit/MenuBar.tscn" id="6_8y856"]
+[ext_resource type="PackedScene" uid="uid://b734ksn8ilqoi" path="res://toolkit/CloseButton.tscn" id="7_4itee"]
 [ext_resource type="Texture2D" uid="uid://bjgmra3wsayvr" path="res://assets/icons/file.svg" id="8_58hpc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_r7m48"]
@@ -99,7 +101,17 @@ layout_mode = 2
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxFlat_ukgrn")
 
-[node name="Header" parent="Content/Container/Top" unique_id=1694574874 instance=ExtResource("5_y3hkb")]
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Top" unique_id=1982816817]
+layout_mode = 2
+
+[node name="PathBar" parent="Content/Container/Top/HBoxContainer" unique_id=2048467433 instance=ExtResource("5_g45aw")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="MenuBar" parent="Content/Container/Top/HBoxContainer" unique_id=1417759323 instance=ExtResource("6_8y856")]
+layout_mode = 2
+
+[node name="Close" parent="Content/Container/Top/HBoxContainer" unique_id=1011518309 instance=ExtResource("7_4itee")]
 layout_mode = 2
 
 [node name="Middle" type="PanelContainer" parent="Content/Container" unique_id=568041948]
@@ -109,11 +121,18 @@ size_flags_vertical = 3
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_682iv")
 
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Middle" unique_id=2071519679]
+layout_mode = 2
+theme_override_constants/separation = 0
+
 [node name="Bottom" type="PanelContainer" parent="Content/Container" unique_id=1543853928]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
 theme_override_styles/panel = SubResource("StyleBoxEmpty_682iv")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Bottom" unique_id=980556254]
+layout_mode = 2
 
 [node name="Splash" type="CenterContainer" parent="." unique_id=1052120785]
 layout_mode = 1

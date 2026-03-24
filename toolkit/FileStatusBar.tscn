@@ -1,0 +1,44 @@
+[gd_scene format=3 uid="uid://bb0bskmvcr3xt"]
+
+[ext_resource type="Script" uid="uid://dchw0i5o5cu88" path="res://toolkit/file_status_bar.gd" id="1_bnwkh"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_rfkq0"]
+content_margin_left = 24.0
+content_margin_right = 24.0
+content_margin_bottom = 4.0
+
+[node name="FileStatusBar" type="PanelContainer" unique_id=1442657997 node_paths=PackedStringArray("lines_text", "size_text", "words_text")]
+modulate = Color(1, 1, 1, 0.39215687)
+clip_contents = true
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+size_flags_horizontal = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_rfkq0")
+script = ExtResource("1_bnwkh")
+lines_text = NodePath("HBoxContainer/Lines")
+size_text = NodePath("HBoxContainer/Size")
+words_text = NodePath("HBoxContainer/Words")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=428441188]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Lines" type="Label" parent="HBoxContainer" unique_id=1173320971]
+layout_mode = 2
+text = "Lines:"
+
+[node name="Words" type="Label" parent="HBoxContainer" unique_id=261911602]
+layout_mode = 2
+text = "Words:"
+
+[node name="Spacer" type="Control" parent="HBoxContainer" unique_id=1076670774]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Size" type="Label" parent="HBoxContainer" unique_id=1953107061]
+layout_mode = 2
+text = "Size:"
+
+[connection signal="resized" from="." to="." method="_on_resized"]

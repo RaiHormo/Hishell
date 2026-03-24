@@ -12,6 +12,8 @@ func init():
 	if Meta.get_folder_meta(window.location, "Maximized", "LAUNCH"):
 		window.send("window_control", "maximize")
 	window.prev_size = get_optimal_size()
+	send("request_menu", "Create")
+	send("request_menu", "View")
 
 func parse_folder():
 	error.hide()
@@ -33,10 +35,6 @@ func parse_folder():
 		if i.ends_with(".import"):
 			files.erase(i)
 	folders = DirAccess.get_directories_at(abs_location).duplicate()
-	if DirAccess.get_open_error():
-		error.text = str(DirAccess.get_open_error())
-		error.show()
-		return
 	grid.show()
 	for i in grid.get_children(): i.queue_free()
 	await get_tree().process_frame
@@ -69,20 +67,20 @@ func view_apply():
 			wallpaper.texture = Thumbnail.load_image(path)
 			wallpaper.show()
 	
-	match Meta.get_folder_meta(abs_location, "GridHorizontalAlign", "LAYOUT"):
+	match window.config.get_value("VIEW", "GridHorizontalAlign", -1):
 		0: grid.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
 		1: grid.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		2: grid.size_flags_horizontal = Control.SIZE_SHRINK_END
 		_: grid.size_flags_horizontal = Control.SIZE_FILL
 	grid.size_flags_horizontal |= Control.SIZE_EXPAND
-	match Meta.get_folder_meta(abs_location, "GridHorizontalAlign", "LAYOUT"):
+	match window.config.get_value("VIEW", "GridVerticalAlign", -1):
 		0: grid.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 		1: grid.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		2: grid.size_flags_vertical = Control.SIZE_SHRINK_END
 		_: grid.size_flags_vertical = Control.SIZE_FILL
 	grid.size_flags_vertical |= Control.SIZE_EXPAND
 	
-	send("icon_size_slider", Meta.get_folder_meta(window.location, "GridSize", "LAYOUT", 64))
+	send("icon_size_slider", window.config.get_value("VIEW", "GridSize", 64))
 
 func get_optimal_size():
 	var siz:= Vector2i(350, 250)

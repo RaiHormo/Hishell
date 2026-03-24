@@ -9,20 +9,28 @@ func show_path(path: String):
 	path = System.rel_path(path)
 	path_folders = path.split("/", false)
 	var root_folders: PackedStringArray
-	if window.parent != null: 
-		root_folders = window.parent.location.split("/")
-		print(root_folders.size(), " ",path_folders.size())
+	if window.parent is BaseWindow: 
+		root_folders = window.parent.location.split("/", false)
+		print(root_folders)
 		if root_folders.size() >= path_folders.size(): root_folders.clear()
 	for i in path_folders:
-		var dup = $Breadcrumbs/Path0.duplicate()
-		if i == System.root_name:
-			dup.icon = preload("res://assets/higameos_logo.png")
-			dup.text = ""
-		else:
-			dup.text = i
+		var dup: Button = $Breadcrumbs/Path0.duplicate()
+		var dir: String = ""
+		for j in path_folders:
+			dir += j+"/"
+			if i == j: break
+		var text = Meta.folder_title(dir)
+		if i == path_folders[-1]:
+			dup.icon = await Thumbnail.get_icon_for(dir, self)
+		elif not Meta.get_cutsom_icon(dir).is_empty():
+			dup.icon = await Thumbnail.get_icon_for(dir, self)
+			text = ""
+		dup.text = text
 		$Breadcrumbs.add_child(dup)
 		if i in root_folders: dup.hide()
 		else: dup.show()
+		if dup.icon != null:
+			dup.custom_minimum_size.x = text.length()*8 + 42
 	$Edit.text = path
 	$Breadcrumbs.get_children()[-1].set_pressed_no_signal(true)
 	await System.wait(0.01)

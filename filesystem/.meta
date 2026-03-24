@@ -1,9 +1,19 @@
+[DISPLAY]
+Title="HiShell"
+
 [LAUNCH]
 
 Maximized=true
 
 [LAYOUT]
+Top = ["toolkit/PathBar"]
+
+[VIEW]
 
 GridHorizontalAlign=1
 GridVerticalAlign=1
 GridSize=150.0
+
+[NAVIGATION]
+
+NavigationType="InPlace"

@@ -59,6 +59,13 @@ content_margin_top = 12.0
 content_margin_right = 12.0
 content_margin_bottom = 12.0
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_3044f"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_comd3"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_bottom = 10.0
+
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_laqrm"]
 bg_color = Color(0.168627, 0.168627, 0.168627, 1)
 draw_center = false
@@ -91,6 +98,11 @@ MarginContainer/constants/margin_right = 12
 MarginContainer/constants/margin_top = 12
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_ng6j3")
 ScrollContainer/styles/panel = SubResource("StyleBoxEmpty_ng6j3")
+TextEdit/colors/background_color = Color(0, 0, 0, 0)
+TextEdit/colors/selection_color = Color(0.38410467, 0.26739135, 0.7320582, 1)
+TextEdit/constants/caret_width = 3
+TextEdit/styles/focus = SubResource("StyleBoxEmpty_3044f")
+TextEdit/styles/normal = SubResource("StyleBoxEmpty_comd3")
 Window/constants/close_h_offset = 38
 Window/constants/close_v_offset = 32
 Window/constants/resize_margin = 24

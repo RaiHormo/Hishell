@@ -21,3 +21,6 @@ func _on_focus_exited() -> void:
 	while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT): await System.wait()
 	button.button_pressed = false
 	toggle(false)
+
+func _exit_tree() -> void:
+	dropdown.queue_free()

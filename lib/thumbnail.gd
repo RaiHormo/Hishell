@@ -5,12 +5,11 @@ static func get_icon_for(path: String, theme: Control) -> Texture2D:
 	path = System.abs_path(path)
 	var is_folder = DirAccess.dir_exists_absolute(path)
 	if is_folder:
-		var dir = DirAccess.open(path)
-		var icon_name = ".icon"
-		for i in System.file_extensions["picture"]:
-			if dir.file_exists(icon_name+"."+i):
-				return await load_image(path+"/"+icon_name+"."+i)
-		return theme.get_theme_icon("folder", "Icons")
+		var custom_icon = Meta.get_cutsom_icon(path)
+		if not custom_icon.is_empty():
+			return await load_image(custom_icon)
+		else:
+			return theme.get_theme_icon("folder", "Icons")
 	else:
 		match System.get_file_type(path):
 			"picture":

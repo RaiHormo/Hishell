@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1774365580|2857888469';
+const CACHE_VERSION = '1774384997|22274239922';
 /** @type {string} */
 const CACHE_PREFIX = 'HiShell-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;

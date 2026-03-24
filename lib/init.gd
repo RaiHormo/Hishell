@@ -7,7 +7,7 @@ func _ready() -> void:
 	await System.wait(0.3)
 	if always_reinstall and DirAccess.dir_exists_absolute("user://filesystem"):
 		System.delete_folder(System.root)
-	if not DirAccess.dir_exists_absolute(System.root):
+	if not DirAccess.dir_exists_absolute(System.root) or always_reinstall:
 		await install()
 	System.user = System.users[0]
 	System.launch(System.root, Vector2i.ZERO, get_tree().root, true)

@@ -6,6 +6,12 @@
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f3md2"]
 
 [node name="FolderView" type="ScrollContainer" unique_id=137702152]
+custom_minimum_size = Vector2(64, 64)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_styles/focus = SubResource("StyleBoxEmpty_f3md2")

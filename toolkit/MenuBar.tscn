@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://doaywkewf0aj1"]
+
+[ext_resource type="Script" uid="uid://7p4enyedkivo" path="res://toolkit/menu_bar.gd" id="1_lu8bt"]
+[ext_resource type="PackedScene" uid="uid://cg24yt2oqqt4l" path="res://toolkit/MenuBar/CreateMenu.tscn" id="2_0oper"]
+[ext_resource type="PackedScene" uid="uid://decpusnoqjmfc" path="res://toolkit/MenuBar/ViewMenu.tscn" id="3_r02ca"]
+
+[node name="MenuBar" type="HBoxContainer" unique_id=1417759323]
+script = ExtResource("1_lu8bt")
+
+[node name="Create" parent="." unique_id=121859152 instance=ExtResource("2_0oper")]
+layout_mode = 2
+
+[node name="View" parent="." unique_id=1478915918 instance=ExtResource("3_r02ca")]
+unique_name_in_owner = true
+layout_mode = 2

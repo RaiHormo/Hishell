@@ -73,10 +73,15 @@ func abs_path(path: String) -> String:
 	path = path.replace(root_name, root)
 	path = path.replace("//", "/")
 	path = path.replace("~/", user_path())
+	if path.ends_with("/"):
+		if FileAccess.file_exists(path.left(-1)):
+			path = path.left(-1)
+	elif DirAccess.dir_exists_absolute(path) or path == root_name:
+		path += "/"
 	return path
 
 func rel_path(path: String) -> String:
-	path = path.replace(root, root_name)
+	path = path.replace(root, root_name+"/")
 	path = path.replace("//", "/")
 	return path
 
@@ -167,3 +172,20 @@ func dialog(message: String, title: String = "Info", _options: PackedStringArray
 	print(title, ": ", message)
 	OS.alert(message, title)
 	return 0
+
+func format_bytes(bytes: float) -> String:
+	var units = ["bytes", "KB", "MB", "GB", "TB"]
+	var unit_index = 0
+	
+	while bytes >= 1000 and unit_index < units.size() - 1:
+		bytes /= 1000.0
+		unit_index += 1
+		
+	return str(int(snapped(bytes, 0.01))) + " " + units[unit_index]
+	
+func merge_config(source: ConfigFile, destination: ConfigFile) -> ConfigFile:
+	for section in source.get_sections():
+		for key in source.get_section_keys(section):
+			var value = source.get_value(section, key)
+			destination.set_value(section, key, value)
+	return destination
