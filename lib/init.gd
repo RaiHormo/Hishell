@@ -14,10 +14,12 @@ func _ready() -> void:
 	queue_free()
 
 func install():
+	print("Starting installation")
 	System.copy_folder("filesystem", "res://filesystem", "user://")
 	System.root = System.abs_path("user://filesystem")
 	for i in System.get_usernames():
-		var user_folder = DirAccess.open(System.create_user_folder(i))
-		await get_tree().process_frame
-		var data_folder = DirAccess.open(user_folder.get_current_dir()+"/data")
+		var _user_folder = DirAccess.open(System.create_user_folder(i))
+		#await get_tree().process_frame
+		#var data_folder = DirAccess.open(user_folder.get_current_dir()+"/data")
 	System.delete_folder(System.root+"/default-user")
+	print("Installed!")

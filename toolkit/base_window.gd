@@ -99,9 +99,16 @@ func link_components(node: Node = self):
 func create_content(type := System.get_file_type(location)):
 	if type == "unknown":
 		System.dialog("No handler for this filetype exists")
+		close()
+		return
+	if type == "invalid":
+		System.dialog("Directory isn't valid: ", location)
+		close()
 		return
 	var layout : ConfigFile = System.get_config_file("layouts/"+type)
-	if layout == null: return
+	if layout == null: 
+		close()
+		return
 	for container in layout.get_section_keys("LAYOUT"):
 		var container_node = get_node_or_null("%"+container)
 		if container_node != null:

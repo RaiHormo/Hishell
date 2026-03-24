@@ -116,7 +116,7 @@ func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_l
 	if not DirAccess.dir_exists_absolute(new_folder_location):
 		printerr("Invalid copy location '" + new_folder_location + ".")
 		return ""
-	
+
 	# Get new location contents, folders and files
 	var copy_location_contents : PackedStringArray = DirAccess.get_directories_at(new_folder_location)
 	copy_location_contents.append_array(DirAccess.get_files_at(new_folder_location))
