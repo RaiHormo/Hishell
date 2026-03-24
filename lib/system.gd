@@ -142,7 +142,7 @@ func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_l
 	return new_dir_path
 
 func create_user_folder(username: String) -> String:
-	return copy_folder(username, "res://filesystem/.default-user", "user://filesystem")
+	return copy_folder(username, "res://filesystem/default-user", "user://filesystem")
 
 func dialog(message: String, title: String = "Info", _options: PackedStringArray = ["OK"]) -> int:
 	print(title, ": ", message)

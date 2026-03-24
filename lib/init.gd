@@ -26,3 +26,4 @@ func install():
 			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_MUSIC), data_folder.get_current_dir()+"/Music")
 			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_MOVIES), data_folder.get_current_dir()+"/Videos")
 			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_DOWNLOADS), data_folder.get_current_dir()+"/Downloads")
+	OS.move_to_trash(System.root+"/default-user")

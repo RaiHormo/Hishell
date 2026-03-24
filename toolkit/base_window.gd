@@ -97,7 +97,11 @@ func link_components(node: Node = self):
 		link_components(i)
 
 func create_content(type := System.get_file_type(location)):
+	if type == "unknown":
+		System.dialog("No handler for this filetype exists")
+		return
 	var layout : ConfigFile = System.get_config_file("layouts/"+type)
+	if layout == null: return
 	for container in layout.get_section_keys("LAYOUT"):
 		var container_node = get_node_or_null("%"+container)
 		if container_node != null:
