@@ -154,9 +154,8 @@ func delete_folder(directory: String) -> void:
 		for file_name in DirAccess.get_files_at(directory):
 			if not dir.is_link(directory):
 				DirAccess.remove_absolute(directory.path_join(file_name))
+		dir.remove("./")
 	else: OS.move_to_trash(directory)
-
-	DirAccess.remove_absolute(directory)
 
 func create_user_folder(username: String) -> String:
 	print("Creating user folder for ", username)
