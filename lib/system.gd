@@ -141,6 +141,16 @@ func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_l
 	
 	return new_dir_path
 
+func delete_folder(directory: String) -> void:
+	if OS.get_name() == "Web":
+		for dir_name in DirAccess.get_directories_at(directory):
+			delete_folder(directory.path_join(dir_name))
+		for file_name in DirAccess.get_files_at(directory):
+			DirAccess.remove_absolute(directory.path_join(file_name))
+	else: OS.move_to_trash(directory)
+
+	DirAccess.remove_absolute(directory)
+
 func create_user_folder(username: String) -> String:
 	return copy_folder(username, "res://filesystem/default-user", "user://filesystem")
 

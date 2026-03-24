@@ -6,7 +6,7 @@ func _ready() -> void:
 	System.init = self
 	await System.wait(0.3)
 	if always_reinstall and DirAccess.dir_exists_absolute("user://filesystem"):
-		OS.move_to_trash(System.root)
+		System.delete_folder(System.root)
 	if not DirAccess.dir_exists_absolute(System.root):
 		await install()
 	System.user = System.users[0]
@@ -26,4 +26,4 @@ func install():
 			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_MUSIC), data_folder.get_current_dir()+"/Music")
 			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_MOVIES), data_folder.get_current_dir()+"/Videos")
 			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_DOWNLOADS), data_folder.get_current_dir()+"/Downloads")
-	OS.move_to_trash(System.root+"/default-user")
+	System.delete_folder(System.root+"/default-user")
