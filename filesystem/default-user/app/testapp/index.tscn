@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://b5gi4g8leghru"]
 
-[ext_resource type="Script" path="res://filesystem/default-user/app/testapp/index.gd" id="1_dhi8r"]
+[ext_resource type="Script" uid="uid://c5inyoednkiof" path="res://filesystem/default-user/app/testapp/index.gd" id="1_dhi8r"]
 [ext_resource type="Texture2D" uid="uid://dre7siy8ne5xf" path="res://assets/icon.svg" id="2_i7dgt"]
 
 [node name="Index" type="Control" unique_id=71142879]

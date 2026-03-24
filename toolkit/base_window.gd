@@ -92,6 +92,7 @@ func open():
 
 func link_components(node: Node = self):
 	for i in node.get_children():
+		if  i is BaseWindow: continue
 		if i.has_method("link_window"):
 			i.link_window(self)
 			components.set(i.name, i)
@@ -185,7 +186,9 @@ func _process(_delta: float) -> void:
 				state = STATE_RESIZE
 		STATE_DRAG:
 			pivot_offset = get_local_mouse_position()
-			position = viewport.get_mouse_position() - drag_mouse_pos - parent.position
+			var parent_pos:= Vector2.ZERO
+			if parent != null: parent_pos = parent.position
+			position = viewport.get_mouse_position() - drag_mouse_pos - parent_pos
 			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				end_drag()
 		STATE_RESIZE:
