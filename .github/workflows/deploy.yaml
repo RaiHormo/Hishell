@@ -1,0 +1,46 @@
+name: Deploy Godot to Cloudflare Pages
+
+on:
+  push:
+    branches: [ "main" ] # Change if your main branch is named differently
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Gzip WASM and Create Headers
+        run: |
+          cd export/web
+
+          # Compress the wasm file and keep the original name
+          gzip -9 -c index.wasm > index.wasm.gz
+          mv index.wasm.gz index.wasm
+
+          # Generate the correct _headers file
+          cat << 'EOF' > _headers
+          /index.wasm
+            Content-Encoding: gzip
+            Content-Type: application/wasm
+            Cross-Origin-Opener-Policy: same-origin
+            Cross-Origin-Embedder-Policy: require-corp
+
+          /*
+            Cross-Origin-Opener-Policy: same-origin
+            Cross-Origin-Embedder-Policy: require-corp
+          EOF
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: 'hishell'
+          directory: 'export/web'
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
