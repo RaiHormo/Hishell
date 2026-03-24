@@ -6,20 +6,23 @@ class_name BaseWindow
 		location = System.rel_path(val)
 		if active:
 			if has_node("%PathBar"): %PathBar.show_path(location)
-			#if state == STATE_WINDOWED:
-				#resize(get_optimal_size())
-			location_changed(val)
+			send("location_changed", val)
 enum {STATE_WINDOWED, STATE_DRAG, STATE_MAXIMIZED, STATE_LOADING, STATE_RESIZE}
 var state:= STATE_LOADING
-var title: String
+var title: String:
+	set(x):
+		title = x
 var origin: Vector2
 var open_pos: Vector2
 var viewport: Viewport
+var components: Dictionary[String, Node]
 var parent: BaseWindow = null
 @export var animation_speed:= 0.3
 @export var draggable = true
 var use_windows:= true
-var prev_size: Vector2
+var prev_size: Vector2 = Vector2(450, 300):
+	set(x):
+		prev_size = x
 @onready var splash: Control  = $Splash
 @onready var content: Control = $Content
 @onready var background: Control  = $Blur
@@ -43,7 +46,11 @@ func _ready() -> void:
 	modulate = Color.TRANSPARENT
 	content.hide()
 	title = location.split("/")[-1]
+	name = title
 	splash.show()
+	if viewport != null:
+		viewport.connect("size_changed", _on_size_changed)
+		focus_entered.connect(focus_window)
 	show()
 	if splash.has_node("Icon"):
 		splash.get_node("Icon").texture = await Thumbnail.get_icon_for(location, self)
@@ -61,37 +68,61 @@ func _ready() -> void:
 		open_pos = get_viewport().get_mouse_position()
 		end_drag()
 	while timer.time_left != 0: await System.wait()
-	open()
+	state = STATE_LOADING
+	send("open")
+
+func send(message: String, value: Variant = null, target: String = ""):
+	if has_method(message):
+		if value != null: await call(message, value)
+		else: await call(message)
+	if not target.is_empty() and components.has(target): 
+		if value != null: await components.get(target).call(message, value)
+		else: await components.get(target).call(message)
+	else:
+		for i: String in components.keys():
+			var component = components.get(i)
+			if not is_instance_valid(component) or component == null: continue
+			if component.has_method(message):
+				if value != null: await component.call(message, value)
+				else: await component.call(message)
 
 func open():
+	create_content()
 	setup_window()
-
-func location_changed(_path: String):
-	pass
 
 func link_components(node: Node = self):
 	for i in node.get_children():
 		if i.has_method("link_window"):
 			i.link_window(self)
+			components.set(i.name, i)
 		link_components(i)
 
+func create_content(type := System.get_file_type(location)):
+	var layout : ConfigFile = System.get_config_file("layouts/"+type)
+	for container in layout.get_section_keys("LAYOUT"):
+		var container_node = get_node_or_null("%"+container)
+		if container_node != null:
+			for i in container_node.get_children():
+				i.queue_free()
+			var values: Array = layout.get_value("LAYOUT", container)
+			for value: String in values:
+				var component = (load("res://"+value+".tscn") as PackedScene).instantiate()
+				container_node.add_child(component)
+
+
 func setup_window():
-	prev_size = get_optimal_size()
-	if not is_root_window():
+	link_components()
+	await send("init")
+	if state == STATE_LOADING:
 		resize(prev_size, open_pos - prev_size/2)
 		state = STATE_WINDOWED
-	else: state = STATE_MAXIMIZED
 	splash.hide()
 	content.show()
 	#wrap_controls = true
-	_update_layout()
-	if viewport != null:
-		viewport.connect("size_changed", _on_size_changed)
-		focus_entered.connect(focus_window)
-	link_components()
+	send("update_layout")
 	active = true
 	window_ready.emit()
-	
+
 
 func _process(_delta: float) -> void:
 	match state:
@@ -132,9 +163,11 @@ func _process(_delta: float) -> void:
 					$Content.mouse_default_cursor_shape = CursorShape.CURSOR_FDIAGSIZE
 					size = get_viewport().get_mouse_position()-position
 			if not Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT) and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				if state == STATE_RESIZE:
+					send("size_changed")
 				state = STATE_WINDOWED
 				$Content.mouse_default_cursor_shape = CursorShape.CURSOR_ARROW
-	
+
 func limit_pos(pos: Vector2, siz:Vector2 = size):
 	pos.x = clamp(pos.x, 0, get_viewport_rect().size.x-siz.x)
 	pos.y = clamp(pos.y, 0, get_viewport_rect().size.y-siz.y)
@@ -163,9 +196,9 @@ func end_drag():
 	set_tweened("position", limit_pos(position))
 
 func _on_size_changed() -> void:
-	_update_layout()
+	send("update_layout")
 
-func _update_layout():
+func update_layout():
 	if state == STATE_MAXIMIZED:
 		resize(viewport.get_visible_rect().size, Vector2i(0,0))
 		use_windows = true
@@ -175,22 +208,15 @@ func _update_layout():
 		use_windows = false
 		draggable = true
 		background.show()
-	if state == STATE_WINDOWED:
-		prev_size = size
 	if position.x < 0:
 		position.x = max(position.x, 0)
 	if position.y < 0:
 		position.y = max(position.y, 48)
 	#decorations.show()
-	update_layout()
+	
 	if has_node("%Grid"):
 		%Grid.update()
-
-func update_layout():
-	pass
-
-func message(type: String, value: Variant):
-	call(type, value)
+	
 
 func navigate(path: String, force_local:= false):
 	path = System.abs_path(path)
@@ -198,17 +224,30 @@ func navigate(path: String, force_local:= false):
 	if use_windows and not force_local:
 		System.launch(path, foc.global_position + foc.size/2, self)
 	else:
-		if System.get_file_type(path) == "folder":
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			await System.wait(animation_speed)
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-				await System.wait(animation_speed)
-				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					System.launch(path, get_viewport().get_mouse_position(), parent)
-				else:
-					location = path
+				System.launch(path, get_viewport().get_mouse_position(), parent)
 			else:
-				location = path
+				navigate_in_place(path)
 		else:
-			System.launch(path, foc.global_position + foc.size/2, parent)
+			navigate_in_place(path)
+
+func navigate_in_place(path: String):
+	if System.get_file_type(location) != System.get_file_type(path):
+		for i in components.duplicate():
+			components.erase(i)
+		create_content(System.get_file_type(path))
+		link_components()
+		await get_tree().process_frame
+		cleanup_components()
+	location = path
+	send.call_deferred("open")
+
+func cleanup_components():
+	for i in components.duplicate():
+			if not is_instance_valid(components.get(i)) or components.get(i) == null:
+				components.erase(i)
 
 func window_control(msg: String):
 	match msg:
@@ -219,20 +258,21 @@ func window_control(msg: String):
 			var tree = get_tree()
 			get_parent().remove_child(self)
 			tree.root.add_child(self)
-			_update_layout()
+			send("update_layout")
 		"unmaximize":
 			if not is_root_window():
 				get_tree().root.remove_child(self)
 				System.root_window().add_child(self)
 			state = STATE_WINDOWED
 			resize(prev_size, center_position())
-			_update_layout()
+			send("update_layout")
 		"maximize_toggle":
-			if state == STATE_MAXIMIZED: message("window_control", "unmaximize")
-			else: message("window_control", "maximize")
+			if state == STATE_MAXIMIZED: send("window_control", "unmaximize")
+			else: send("window_control", "maximize")
 		"close": close()
 
 func close() -> void:
+	cleanup_components()
 	set_tweened("modulate", Color.TRANSPARENT)
 	await resize(Vector2(200,200), origin)
 	if is_root_window():
@@ -244,6 +284,7 @@ func resize(siz: Vector2, pos: Vector2 = position):
 	set_tweened("size", siz)
 	set_tweened("position", pos)
 	await System.wait(animation_speed)
+	send("size_changed")
 
 func opacity_slider(value: float) -> void:
 	background.modulate.a = value/100
@@ -253,10 +294,6 @@ func is_root_window() -> bool:
 
 func center_position():
 	return viewport.get_visible_rect().get_center() - Vector2(prev_size/2)
-
-func get_optimal_size():
-	var siz:= Vector2i(400, 300)
-	return siz
 
 func _on_content_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

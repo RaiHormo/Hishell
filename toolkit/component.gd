@@ -1,13 +1,19 @@
-extends Button
-class_name ButtonComponent
+extends Control
+class_name Component
 
 var window: BaseWindow
 
 func link_window(with: BaseWindow):
 	window = with
 
-func send(message: String, value: Variant):
-	window.message(message, value)
+func send(message: String, value: Variant = null):
+	window.send(message, value)
 
 func send_value(value: Variant, message: String):
-	window.message(message, value)
+	window.send(message, value)
+
+func recieve(message: String, value: Variant = null) -> bool:
+	if has_method(message):
+		call(message, value)
+		return true
+	else: return false

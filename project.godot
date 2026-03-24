@@ -42,11 +42,15 @@ window/stretch/scale=1.25
 
 folder_colors={
 "res://Hishell/": "gray",
-"res://app/": "blue",
 "res://assets/": "purple",
+"res://filesystem/": "gray",
 "res://lib/": "teal",
 "res://toolkit/": "green"
 }
+
+[filesystem]
+
+import/blender/enabled=false
 
 [godots]
 

@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://b2m3s14iuih5f"]
+
+[ext_resource type="PackedScene" uid="uid://cy6q1wyost6dp" path="res://toolkit/PathBar.tscn" id="1_kgypo"]
+[ext_resource type="PackedScene" uid="uid://cg24yt2oqqt4l" path="res://toolkit/MenuBar/CreateMenu.tscn" id="2_s2t08"]
+[ext_resource type="PackedScene" uid="uid://decpusnoqjmfc" path="res://toolkit/MenuBar/ViewMenu.tscn" id="3_h3eng"]
+[ext_resource type="PackedScene" uid="uid://b734ksn8ilqoi" path="res://toolkit/CloseButton.tscn" id="4_5vp57"]
+
+[node name="Header" type="HBoxContainer" unique_id=1694574874]
+
+[node name="PathBar" parent="." unique_id=2048467433 instance=ExtResource("1_kgypo")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="CreateMenu" parent="." unique_id=121859152 instance=ExtResource("2_s2t08")]
+layout_mode = 2
+
+[node name="ViewMenu" parent="." unique_id=1478915918 instance=ExtResource("3_h3eng")]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Close" parent="." unique_id=1011518309 instance=ExtResource("4_5vp57")]
+layout_mode = 2

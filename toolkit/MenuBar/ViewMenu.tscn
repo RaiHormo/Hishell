@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://decpusnoqjmfc"]
+
+[ext_resource type="Script" uid="uid://dlqtt27645lnf" path="res://toolkit/MenuBar/drop_menu.gd" id="1_uwldv"]
+[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="2_30tx6"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ewigs"]
+
+[node name="PanelContainer" type="PanelContainer" unique_id=1478915918 node_paths=PackedStringArray("dropdown", "button")]
+offset_right = 53.0
+offset_bottom = 39.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_ewigs")
+script = ExtResource("1_uwldv")
+dropdown = NodePath("ViewMenu/Dropdown")
+button = NodePath("ViewMenu")
+
+[node name="ViewMenu" type="Button" parent="." unique_id=1796936364]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+mouse_default_cursor_shape = 2
+theme = ExtResource("2_30tx6")
+toggle_mode = true
+action_mode = 0
+text = "View"
+
+[node name="Dropdown" type="PanelContainer" parent="ViewMenu" unique_id=1687519330]
+layout_mode = 0
+offset_top = 57.0
+offset_right = 201.0
+offset_bottom = 194.0
+
+[node name="List" type="VBoxContainer" parent="ViewMenu/Dropdown" unique_id=973333122]
+layout_mode = 2
+
+[node name="Maximize" type="Button" parent="ViewMenu/Dropdown/List" unique_id=1617937166]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Maximize"
+
+[node name="IconSize" type="HSlider" parent="ViewMenu/Dropdown/List" unique_id=467544882]
+custom_minimum_size = Vector2(60, 70)
+layout_mode = 2
+min_value = 32.0
+max_value = 150.0
+step = 8.0
+value = 64.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ViewMenu/Dropdown/List/IconSize" unique_id=1076685747]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="ViewMenu/Dropdown/List/IconSize" unique_id=1162651150]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Icon size"
+
+[node name="Opacity" type="HSlider" parent="ViewMenu/Dropdown/List" unique_id=1403924728]
+custom_minimum_size = Vector2(60, 70)
+layout_mode = 2
+step = 5.0
+value = 90.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ViewMenu/Dropdown/List/Opacity" unique_id=1177959197]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Label" type="Label" parent="ViewMenu/Dropdown/List/Opacity" unique_id=150754088]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Opacity"
+
+[connection signal="focus_exited" from="ViewMenu" to="." method="_on_focus_exited"]
+[connection signal="toggled" from="ViewMenu" to="." method="toggle"]
+[connection signal="pressed" from="ViewMenu/Dropdown/List/Maximize" to="." method="send" binds= ["window_control", "maximize_toggle"]]
+[connection signal="value_changed" from="ViewMenu/Dropdown/List/IconSize" to="." method="send_value" binds= ["icon_size_slider"]]
+[connection signal="value_changed" from="ViewMenu/Dropdown/List/Opacity" to="." method="send_value" binds= ["opacity_slider"]]

@@ -1,0 +1,3 @@
+[LAYOUT]
+Top = ["toolkit/Header"]
+Middle = ["toolkit/FolderView"]

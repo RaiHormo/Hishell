@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://y53deuh7v4et"]
+
+[ext_resource type="Script" uid="uid://baq7a0lly5mcp" path="res://toolkit/folder_view.gd" id="1_f3gkb"]
+[ext_resource type="Script" uid="uid://dxumdyb2awpiy" path="res://lib/content_grid.gd" id="1_qprf8"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_f3md2"]
+
+[node name="FolderView" type="ScrollContainer" unique_id=137702152]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_styles/focus = SubResource("StyleBoxEmpty_f3md2")
+follow_focus = true
+draw_focus_border = true
+script = ExtResource("1_f3gkb")
+
+[node name="Grid" type="FlowContainer" parent="." unique_id=490585232]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+last_wrap_alignment = 1
+script = ExtResource("1_qprf8")
+
+[node name="Error" type="Label" parent="." unique_id=2091076214]
+visible = false
+layout_mode = 2
+text = "404"
+horizontal_alignment = 1

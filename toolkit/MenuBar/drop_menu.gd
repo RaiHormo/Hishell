@@ -1,6 +1,7 @@
-extends ButtonComponent
+extends Component
 
-@onready var dropdown: PanelContainer = $Dropdown
+@export var dropdown: PanelContainer
+@export var button: Button
 
 func _ready() -> void:
 	dropdown.hide()
@@ -18,5 +19,5 @@ func toggle(toggled_on: bool) -> void:
 
 func _on_focus_exited() -> void:
 	while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT): await System.wait()
-	button_pressed = false
+	button.button_pressed = false
 	toggle(false)

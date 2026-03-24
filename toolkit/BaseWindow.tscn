@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://0fthgyrf0xj8"]
+
+[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_g45aw"]
+[ext_resource type="Script" uid="uid://d263oshk04l81" path="res://toolkit/base_window.gd" id="2_4itee"]
+[ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="3_4itee"]
+[ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="4_4itee"]
+[ext_resource type="PackedScene" uid="uid://b2m3s14iuih5f" path="res://toolkit/Header.tscn" id="5_y3hkb"]
+[ext_resource type="Texture2D" uid="uid://bjgmra3wsayvr" path="res://assets/icons/file.svg" id="8_58hpc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r7m48"]
+shader = ExtResource("3_4itee")
+shader_parameter/strength = 15.0000007125
+shader_parameter/sample_power = 3
+shader_parameter/is_canvas_group = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v0la3"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4itee"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ukgrn"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0, 0, 0.5176471)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_682iv"]
+
+[node name="Window" type="Control" unique_id=496038198]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -386.0
+offset_top = -226.5
+offset_right = 386.0
+offset_bottom = 226.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_g45aw")
+script = ExtResource("2_4itee")
+
+[node name="Blur" type="PanelContainer" parent="." unique_id=1837327616]
+material = SubResource("ShaderMaterial_r7m48")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_v0la3")
+
+[node name="Background" type="PanelContainer" parent="Blur" unique_id=404011085]
+modulate = Color(0, 0, 0, 0.7176471)
+layout_mode = 2
+
+[node name="Content" type="PanelContainer" parent="." unique_id=500661032]
+clip_children = 1
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_4itee")
+
+[node name="Wallpaper" type="TextureRect" parent="Content" unique_id=985723819]
+visible = false
+layout_mode = 2
+texture = ExtResource("4_4itee")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Container" type="VBoxContainer" parent="Content" unique_id=1195486355]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Top" type="PanelContainer" parent="Content/Container" unique_id=1508801765]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_ukgrn")
+
+[node name="Header" parent="Content/Container/Top" unique_id=1694574874 instance=ExtResource("5_y3hkb")]
+layout_mode = 2
+
+[node name="Middle" type="PanelContainer" parent="Content/Container" unique_id=568041948]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_682iv")
+
+[node name="Bottom" type="PanelContainer" parent="Content/Container" unique_id=1543853928]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_682iv")
+
+[node name="Splash" type="CenterContainer" parent="." unique_id=1052120785]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Icon" type="TextureRect" parent="Splash" unique_id=1734033406]
+custom_minimum_size = Vector2(86, 86)
+layout_mode = 2
+texture = ExtResource("8_58hpc")
+expand_mode = 1
+stretch_mode = 5
+
+[connection signal="gui_input" from="Content" to="." method="_on_content_gui_input"]
