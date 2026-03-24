@@ -106,6 +106,8 @@ func get_file_type(location: String) -> String:
 
 ## Copy the contents of a folder into a new folder, and return the new folders absolute path
 func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_location : String) -> String:
+	new_folder_location = abs_path(new_folder_location)
+	print("Copying folder ", folder_to_copy, " to ", new_folder_location)
 	
 	# Handle path issues
 	if not DirAccess.dir_exists_absolute(folder_to_copy):
@@ -157,6 +159,7 @@ func delete_folder(directory: String) -> void:
 	DirAccess.remove_absolute(directory)
 
 func create_user_folder(username: String) -> String:
+	print("Creating user folder for ", username)
 	return copy_folder(username, "res://filesystem/default-user", "user://filesystem")
 
 func dialog(message: String, title: String = "Info", _options: PackedStringArray = ["OK"]) -> int:
