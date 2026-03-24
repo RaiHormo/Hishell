@@ -141,6 +141,7 @@ func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_l
 	#Copy each file and folder into the new folder
 	var old_files : PackedStringArray = dir.get_files()
 	for f : String in old_files:
+		if f.ends_with(".import") or f.ends_with(".uid"): continue
 		DirAccess.copy_absolute(folder_to_copy + "/" + f, new_dir_path + "/" + f)
 	var old_directories : PackedStringArray = dir.get_directories()
 	for d : String in old_directories:
@@ -189,3 +190,14 @@ func merge_config(source: ConfigFile, destination: ConfigFile) -> ConfigFile:
 			var value = source.get_value(section, key)
 			destination.set_value(section, key, value)
 	return destination
+
+func current_path(scene: Node) -> String:
+	var window = scene
+	var repeats := 0
+	while window is not BaseWindow or repeats > 10:
+		if window == get_tree().root: break
+		window = window.get_parent()
+		repeats += 1
+	if window is BaseWindow:
+		return window.location
+	else: return ""

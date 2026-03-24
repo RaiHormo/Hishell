@@ -1,0 +1,6 @@
+[DISPLAY]
+Title = "Cool test app"
+
+[LAYOUT]
+Top = ["toolkit/PathBar", "toolkit/CloseButton"]
+Middle = ["./index"]

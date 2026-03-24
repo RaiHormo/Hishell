@@ -129,11 +129,20 @@ func create_content(type := System.get_file_type(location)):
 				i.queue_free()
 			var values: Array = config.get_value("LAYOUT", container)
 			for value: String in values:
-				if ResourceLoader.exists("res://"+value+".tscn"):
-					var component = (load("res://"+value+".tscn") as PackedScene).instantiate()
-					hbox.add_child(component)
+				if not value.ends_with(".tscn"): value += ".tscn"
+				var component: Control
+				if value.begins_with("./"):
+					var path = System.abs_path(value.replace("./", location))
+					if FileAccess.file_exists(path):
+						var packed := ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
+						component = packed.instantiate()
+					else: System.dialog("Non existant component specified: "+ path, "Error")
 				else:
+					if ResourceLoader.exists("res://"+value):
+						component = (load("res://"+value) as PackedScene).instantiate()
+				if component == null:
 					System.dialog("Non existant component specified: "+ value, "Error")
+				else: hbox.add_child(component)
 
 
 func setup_window():

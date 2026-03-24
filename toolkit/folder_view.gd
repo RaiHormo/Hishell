@@ -31,9 +31,6 @@ func parse_folder():
 	#var location_parts = abs_location.split("/", false)
 	window.title = abs_location.get_file()
 	files = DirAccess.get_files_at(abs_location).duplicate()
-	for i in files.duplicate():
-		if i.ends_with(".import"):
-			files.erase(i)
 	folders = DirAccess.get_directories_at(abs_location).duplicate()
 	grid.show()
 	for i in grid.get_children(): i.queue_free()
