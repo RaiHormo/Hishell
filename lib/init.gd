@@ -20,10 +20,4 @@ func install():
 		var user_folder = DirAccess.open(System.create_user_folder(i))
 		await get_tree().process_frame
 		var data_folder = DirAccess.open(user_folder.get_current_dir()+"/data")
-		if OS.get_name() == "Linux":
-			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_DOCUMENTS), data_folder.get_current_dir()+"/Documents")
-			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_PICTURES), data_folder.get_current_dir()+"/Pictures")
-			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_MUSIC), data_folder.get_current_dir()+"/Music")
-			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_MOVIES), data_folder.get_current_dir()+"/Videos")
-			data_folder.create_link(OS.get_system_dir(OS.SYSTEM_DIR_DOWNLOADS), data_folder.get_current_dir()+"/Downloads")
 	System.delete_folder(System.root+"/default-user")

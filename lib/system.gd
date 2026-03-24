@@ -25,7 +25,7 @@ func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_t
 	if type == "invalid" or type == "unknown":
 		System.dialog("Cannot open %s, the type is set to \"%s\"."%[path, type], "Error")
 		return
-	var window = (load("uid://0fthgyrf0xj8") as PackedScene).instantiate()
+	var window = (preload("uid://0fthgyrf0xj8") as PackedScene).instantiate()
 	window.location = path
 	window.origin = position
 	window.open_pos = position
@@ -142,11 +142,16 @@ func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_l
 	return new_dir_path
 
 func delete_folder(directory: String) -> void:
+	directory = abs_path(directory)
+	print("Deleting ", directory)
 	if OS.get_name() == "Web":
+		var dir := DirAccess.open(directory)
 		for dir_name in DirAccess.get_directories_at(directory):
-			delete_folder(directory.path_join(dir_name))
+			if not dir.is_link(directory):
+				delete_folder(directory.path_join(dir_name))
 		for file_name in DirAccess.get_files_at(directory):
-			DirAccess.remove_absolute(directory.path_join(file_name))
+			if not dir.is_link(directory):
+				DirAccess.remove_absolute(directory.path_join(file_name))
 	else: OS.move_to_trash(directory)
 
 	DirAccess.remove_absolute(directory)
