@@ -1,6 +1,7 @@
 /index.wasm
   Content-Encoding: gzip
   Content-Type: application/wasm
+  Cache-Control: no-transform, public, max-age=0
   Cross-Origin-Opener-Policy: same-origin
   Cross-Origin-Embedder-Policy: require-corp
 

@@ -34,6 +34,10 @@ window/size/borderless=true
 window/stretch/aspect="expand"
 window/stretch/scale=1.25
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/minimize_html_build/plugin.cfg")
+
 [file_customization]
 
 folder_colors={

@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1774349728|2281615041';
+const CACHE_VERSION = '1774352944|3193127147';
 /** @type {string} */
 const CACHE_PREFIX = 'HiShell-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;
@@ -14,7 +14,7 @@ const OFFLINE_URL = 'index.offline.html';
 const ENSURE_CROSSORIGIN_ISOLATION_HEADERS = true;
 // Files that will be cached on load.
 /** @type {string[]} */
-const CACHED_FILES = ["index.html","index.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","index.audio.worklet.js","index.audio.position.worklet.js"];
+const CACHED_FILES = ["index.html","index.js","index.offline.html","index.icon.png","index.apple-touch-icon.png","index.audio.worklet.js","index.audio.position.worklet.js","pako_inflate.min.js"];
 // Files that we might not want the user to preload, and will only be cached on first load.
 /** @type {string[]} */
 const CACHEABLE_FILES = ["index.wasm","index.pck"];
