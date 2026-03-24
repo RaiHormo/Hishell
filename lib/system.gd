@@ -148,13 +148,15 @@ func delete_folder(directory: String) -> void:
 	print("Deleting ", directory)
 	if OS.get_name() == "Web":
 		var dir := DirAccess.open(directory)
-		for dir_name in DirAccess.get_directories_at(directory):
+		dir.include_hidden = true
+		for dir_name in dir.get_directories():
 			if not dir.is_link(directory):
 				delete_folder(directory.path_join(dir_name))
-		for file_name in DirAccess.get_files_at(directory):
+		for file_name in dir.get_files():
 			if not dir.is_link(directory):
 				DirAccess.remove_absolute(directory.path_join(file_name))
-		dir.remove("./")
+		if dir.remove(directory) == 1:
+			print("Directory not empty: ", dir.get_directories())
 	else: OS.move_to_trash(directory)
 
 func create_user_folder(username: String) -> String:
