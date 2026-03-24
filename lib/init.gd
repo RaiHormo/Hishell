@@ -5,7 +5,7 @@ const always_reinstall:= true
 func _ready() -> void:
 	System.init = self
 	await System.wait(0.3)
-	if always_reinstall:
+	if always_reinstall and DirAccess.dir_exists_absolute("user://filesystem"):
 		OS.move_to_trash(System.root)
 	if not DirAccess.dir_exists_absolute(System.root):
 		await install()
