@@ -18,8 +18,9 @@ var theme: Theme = preload("res://assets/themes/Default.tres")
 var config_path := "~/config/"
 
 var focused_window: BaseWindow = null
+var windows: Array[BaseWindow]
 
-func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_tree().root, maximized:= false):
+func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = root_window(), maximized:= false):
 	path = abs_path(path)
 	var type = get_file_type(path)
 	if type == "invalid" or type == "unknown":
@@ -36,6 +37,7 @@ func launch(path: String, position: Vector2 = Vector2.ZERO, parent: Node = get_t
 	parent.add_child(window)
 	if maximized: window.state = BaseWindow.STATE_MAXIMIZED
 	await window.window_ready
+	windows.append(window)
 
 func wait(time: float = 0):
 	await get_tree().create_timer(time).timeout

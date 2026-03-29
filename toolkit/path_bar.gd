@@ -57,7 +57,7 @@ func _on_breadcrumb_pressed() -> void:
 			if count == 0:
 				break
 		print(new_location)
-		window.navigate(System.abs_path(new_location), true)
+		window.navigate(System.abs_path(new_location), "InPlace")
 		show_path(new_location)
 
 func _on_edit_editing_toggled(toggled_on: bool) -> void:
@@ -66,11 +66,14 @@ func _on_edit_editing_toggled(toggled_on: bool) -> void:
 		$Breadcrumbs.show()
 
 func _on_edit_text_submitted(new_text: String) -> void:
-	if DirAccess.dir_exists_absolute(System.abs_path(new_text)):
-		window.navigate(new_text, true)
-	$Edit.hide()
-	$Breadcrumbs.show()
-	$Breadcrumbs.get_children()[-1].set_pressed_no_signal(true)
+	new_text = System.abs_path(new_text)
+	if DirAccess.dir_exists_absolute(new_text) or FileAccess.file_exists(new_text):
+		window.navigate(new_text, "InPlace")
+		$Edit.hide()
+		$Breadcrumbs.show()
+		$Breadcrumbs.get_children()[-1].set_pressed_no_signal(true)
+	else:
+		System.dialog("No File or Directory in "+ new_text, "Error")
 
 
 func _on_resized() -> void:

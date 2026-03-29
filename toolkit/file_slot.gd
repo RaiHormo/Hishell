@@ -65,7 +65,18 @@ func update_layout():
 
 
 func _on_button_pressed() -> void:
-	window.navigate(window.location+"/"+filename)
+	var result = await window.navigate(window.location+"/"+filename, "Auto", self)
+	match result:
+		0:
+			modulate = Color.WHITE
+		1:
+			unfade()
+
+func fade():
+	window.set_tweened("modulate:a", 0, self)
+
+func unfade():
+	window.set_tweened("modulate:a", 1, self)
 
 func _exit_tree():
 	if thread != null and thread.is_started():

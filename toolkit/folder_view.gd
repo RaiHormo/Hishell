@@ -29,7 +29,6 @@ func parse_folder():
 		push_error("Folder "+abs_location+ " wasn't found")
 		return
 	#var location_parts = abs_location.split("/", false)
-	window.title = abs_location.get_file()
 	files = DirAccess.get_files_at(abs_location).duplicate()
 	folders = DirAccess.get_directories_at(abs_location).duplicate()
 	grid.show()

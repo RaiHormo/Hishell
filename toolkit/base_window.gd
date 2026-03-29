@@ -46,7 +46,7 @@ func _ready() -> void:
 	scale = Vector2(0.5, 0.5)
 	modulate = Color.TRANSPARENT
 	content.hide()
-	title = location.split("/", false)[-1]
+	title = Meta.folder_title(location)
 	name = title
 	splash.show()
 	if viewport != null:
@@ -62,8 +62,12 @@ func _ready() -> void:
 	var timer = get_tree().create_timer(animation_speed)
 	if draggable:
 		drag_mouse_pos = size/2
+		var parent_pos = Vector2.ZERO
+		if parent != null:
+			parent_pos = parent.position
 		while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			position = get_viewport().get_mouse_position() - size/2 - parent.position
+			position = get_viewport().get_mouse_position() - size/2 - parent_pos
+			check_dragndrop(position)
 			await System.wait()
 		open_pos = get_viewport().get_mouse_position()
 		end_drag()
@@ -214,14 +218,10 @@ func limit_pos(pos: Vector2, siz:Vector2 = size):
 	pos.y = clamp(pos.y, -parent_pos.y, get_viewport_rect().size.y-siz.y -parent_pos.y)
 	return pos
 
-func set_tweened(property: StringName, value: Variant) -> bool:
-	match property:
-		"size", "position", "scale", "modulate":
-			var t = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-			t.tween_property(self, String(property), value, animation_speed)
-			await t.finished
-			return true
-	return false
+func set_tweened(property: StringName, value: Variant, node: Node = self) -> void:
+	var t = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	t.tween_property(node, NodePath(property), value, animation_speed)
+	await t.finished
 
 func enter_drag(mouse_pos: Vector2):
 	$Content.mouse_default_cursor_shape = Control.CURSOR_CAN_DROP
@@ -238,6 +238,12 @@ func end_drag():
 
 func size_changed() -> void:
 	send("update_layout")
+
+func check_dragndrop(pos := position):
+	for window: BaseWindow in System.windows:
+		if window.get_rect().has_point(pos):
+			print(window.title)
+			break
 
 func update_layout():
 	if state == STATE_MAXIMIZED:
@@ -256,29 +262,37 @@ func update_layout():
 	#decorations.show()
 	
 	send("update")
-	
-	
 
-func navigate(path: String, force_local:= false):
+
+func navigate(path: String, type: String = "Auto", foc: Node = null):
+	if type == "Auto":
+		type = config.get_value("NAVIGATION", "NavigationType", "Auto")
+		if type == "Auto" and state == STATE_MAXIMIZED:
+			type = "Window"
 	path = System.abs_path(path)
-	var foc = viewport.gui_get_focus_owner()
-	match Meta.get_folder_meta(location, "NavigationType", "NAVIGATION"):
+	if foc == null:
+		foc = viewport.gui_get_focus_owner()
+	match type:
 		"InPlace":
 			navigate_in_place(path)
+			return 0
 		"Window":
-			System.launch(path, foc.global_position + foc.size/2, self)
+			if foc.has_method("fade"): foc.fade()
+			await System.launch(path, foc.global_position + foc.size/2)
+			return 1
 		_:
-			if use_windows and not force_local:
-				System.launch(path, foc.global_position + foc.size/2, self)
-			else:
+			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				await System.wait(animation_speed/2)
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-					await System.wait(animation_speed)
-					if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-						System.launch(path, get_viewport().get_mouse_position(), parent)
-					else:
-						navigate_in_place(path)
+					if foc.has_method("fade"): foc.fade()
+					await System.launch(path, get_viewport().get_mouse_position())
+					return 1
 				else:
 					navigate_in_place(path)
+					return 0
+			else:
+				navigate_in_place(path)
+				return 0
 
 
 func navigate_in_place(path: String):
@@ -324,9 +338,13 @@ func close() -> void:
 	cleanup_components()
 	set_tweened("modulate", Color.TRANSPARENT)
 	await resize(Vector2(200,200), origin)
+	System.windows.erase(self)
 	if is_root_window():
 		get_tree().quit()
 	queue_free()
+
+func _exit_tree() -> void:
+	System.windows.erase(self)
 
 func resize(siz: Vector2, pos: Vector2 = position):
 	pos = limit_pos(pos, siz)
@@ -359,5 +377,7 @@ func _on_content_gui_input(event: InputEvent) -> void:
 func focus_window():
 	System.focused_window = self
 	move_to_front()
+	System.windows.erase(self)
+	System.windows.push_front(self)
 	if parent != null:
 		parent.move_child(self, -1)
