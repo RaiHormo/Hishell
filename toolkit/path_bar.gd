@@ -6,14 +6,17 @@ var window: BaseWindow
 func show_path(path: String):
 	for i in $Breadcrumbs.get_children():
 		if i.name != "Path0": i.queue_free()
-	path = System.rel_path(path)
+	path = Filesystem.rel_path(path)
 	path_folders = path.split("/", false)
+	if not Filesystem.path_prefix(path).is_empty():
+		path_folders.remove_at(0)
 	var root_folders: PackedStringArray
 	if window.parent is BaseWindow: 
 		root_folders = window.parent.location.split("/", false)
 		print(root_folders)
 		if root_folders.size() >= path_folders.size(): root_folders.clear()
 	for i in path_folders:
+		if i.ends_with(":"): continue
 		var dup: Button = $Breadcrumbs/Path0.duplicate()
 		var dir: String = ""
 		for j in path_folders:
@@ -47,17 +50,19 @@ func _on_breadcrumb_pressed() -> void:
 		$Breadcrumbs.hide()
 	else:
 		var new_location: String = ""
-		if path_folders[0] != System.root_name:
-			new_location += "/"
+		#if path_folders[0] != System.root_name:
+			#new_location += "/"
 		var count = node.get_index()
-		print(count)
 		for i in path_folders:
 			new_location += i+"/"
 			count -= 1
 			if count == 0:
 				break
+		var prefix = Filesystem.path_prefix(window.location)
+		if not prefix.is_empty():
+			new_location = prefix + "://" + new_location
 		print(new_location)
-		window.navigate(System.abs_path(new_location), "InPlace")
+		window.navigate(new_location, "InPlace")
 		show_path(new_location)
 
 func _on_edit_editing_toggled(toggled_on: bool) -> void:
@@ -66,8 +71,8 @@ func _on_edit_editing_toggled(toggled_on: bool) -> void:
 		$Breadcrumbs.show()
 
 func _on_edit_text_submitted(new_text: String) -> void:
-	new_text = System.abs_path(new_text)
-	if DirAccess.dir_exists_absolute(new_text) or FileAccess.file_exists(new_text):
+	new_text = Filesystem.rel_path(new_text)
+	if Filesystem.exists(new_text):
 		window.navigate(new_text, "InPlace")
 		$Edit.hide()
 		$Breadcrumbs.show()

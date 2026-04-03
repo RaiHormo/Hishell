@@ -3,7 +3,7 @@ class_name BaseWindow
 
 @export var location:= "user://":
 	set(val):
-		location = System.rel_path(val)
+		location = Filesystem.rel_path(val)
 		if active:
 			if has_node("%PathBar"): %PathBar.show_path(location)
 			send("location_changed", val)
@@ -56,7 +56,7 @@ func _ready() -> void:
 		splash.get_node("Icon").texture = await Thumbnail.get_icon_for(location, self)
 		if splash.has_node("Icon/Label"):
 			splash.get_node("Icon/Label").text = title
-	theme = System.theme
+	theme = ConfigManager.theme
 	set_tweened("modulate", Color.WHITE)
 	set_tweened("scale", Vector2.ONE)
 	var timer = get_tree().create_timer(animation_speed)
@@ -93,6 +93,8 @@ func send(message: String, value: Variant = null, target: String = ""):
 func open():
 	create_content()
 	setup_window()
+	if config.get_value("LAUNCH", "Maximized", false):
+		send("window_control", "maximize")
 
 func link_components(node: Node = self):
 	for i in node.get_children():
@@ -103,20 +105,21 @@ func link_components(node: Node = self):
 		link_components(i)
 
 func create_config(type: String):
-	if not FileAccess.file_exists(System.abs_path(System.config_path+"layouts/default.cfg")):
+	if not Filesystem.exists(ConfigManager.config_path+"layouts/default.cfg"):
 		System.dialog("Something went really wrong, default config not found.", "Error")
 		close()
 		return
-	config = System.get_config_file("layouts/default.cfg")
-	System.merge_config(System.get_config_file("layouts/"+type+".cfg"), config)
+	config = ConfigManager.get_config_file("layouts/default.cfg")
+	ConfigManager.merge_config(ConfigManager.get_config_file("layouts/"+type+".cfg"), config)
 	if config == null: 
 		close()
 		return
-	var meta = Meta.get_folder_config(location)
-	if meta != null:
-		System.merge_config(meta, config)
+	if not config.get_value("META", "IgnoreMeta", false):
+		var meta = Meta.get_folder_config(location)
+		if meta != null:
+			ConfigManager.merge_config(meta, config)
 
-func create_content(type := System.get_file_type(location)):
+func create_content(type := Filesystem.get_file_type(location)):
 	if type == "unknown":
 		System.dialog("No handler for this filetype exists")
 		close()
@@ -137,10 +140,17 @@ func create_content(type := System.get_file_type(location)):
 				if not value.ends_with(".tscn"): value += ".tscn"
 				var component: Control
 				if value.begins_with("./"):
-					var path = System.abs_path(value.replace("./", location))
-					if FileAccess.file_exists(path):
+					var path = Filesystem.abs_path(value.replace("./", location))
+					if Filesystem.exists(path):
 						var packed := ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE) as PackedScene
 						component = packed.instantiate()
+						var script_path = path.replace(".tscn", ".gd")
+						if Filesystem.is_file(script_path):
+							var script: Script = ResourceLoader.load(script_path, "Script", ResourceLoader.CACHE_MODE_IGNORE)
+							var error = script.reload()
+							if error == Error.OK:
+								component.set_script(script)
+							else: System.dialog(error_string(error))
 					else: System.dialog("Non existant component specified: "+ path, "Error")
 				else:
 					if ResourceLoader.exists("res://"+value):
@@ -269,7 +279,7 @@ func navigate(path: String, type: String = "Auto", foc: Node = null):
 		type = config.get_value("NAVIGATION", "NavigationType", "Auto")
 		if type == "Auto" and state == STATE_MAXIMIZED:
 			type = "Window"
-	path = System.abs_path(path)
+	path = Filesystem.rel_path(path)
 	if foc == null:
 		foc = viewport.gui_get_focus_owner()
 	match type:
@@ -278,14 +288,14 @@ func navigate(path: String, type: String = "Auto", foc: Node = null):
 			return 0
 		"Window":
 			if foc.has_method("fade"): foc.fade()
-			await System.launch(path, foc.global_position + foc.size/2)
+			await System.launch(Filesystem.abs_path(path), foc.global_position + foc.size/2)
 			return 1
 		_:
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 				await System.wait(animation_speed/2)
 				if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
 					if foc.has_method("fade"): foc.fade()
-					await System.launch(path, get_viewport().get_mouse_position())
+					await System.launch(Filesystem.abs_path(path), get_viewport().get_mouse_position())
 					return 1
 				else:
 					navigate_in_place(path)
@@ -296,10 +306,10 @@ func navigate(path: String, type: String = "Auto", foc: Node = null):
 
 
 func navigate_in_place(path: String):
-	if System.get_file_type(location) != System.get_file_type(path):
+	if Filesystem.get_file_type(location) != Filesystem.get_file_type(path):
 		for i in components.duplicate():
 			components.erase(i)
-		create_content(System.get_file_type(path))
+		create_content(Filesystem.get_file_type(path))
 		link_components()
 		await get_tree().process_frame
 		cleanup_components()
@@ -381,3 +391,7 @@ func focus_window():
 	System.windows.push_front(self)
 	if parent != null:
 		parent.move_child(self, -1)
+
+func add_prefix(prefix: String) -> void:
+	var prev = Filesystem.path_prefix(location, true)
+	navigate(prefix + "://" + location.replace(prev, ""))

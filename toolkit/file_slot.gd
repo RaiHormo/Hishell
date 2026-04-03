@@ -21,7 +21,6 @@ func link_window(with: BaseWindow):
 	window = with
 
 func set_to(new_name: String, path: String = ""):
-	path = System.abs_path(path)
 	if path != "":
 		icon.texture = await Thumbnail.get_icon_for(path, self)
 	else: icon.texture = null
@@ -65,7 +64,7 @@ func update_layout():
 
 
 func _on_button_pressed() -> void:
-	var result = await window.navigate(window.location+"/"+filename, "Auto", self)
+	var result = await window.navigate(window.location+filename, "Auto", self)
 	match result:
 		0:
 			modulate = Color.WHITE

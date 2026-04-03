@@ -15,16 +15,15 @@ func update():
 	else: set_from_file()
 
 func set_from_file():
-	var location = System.abs_path(window.location)
-	if FileAccess.file_exists(location):
-		var file = FileAccess.open(location, FileAccess.READ)
+	if Filesystem.is_file(window.location):
+		var file = Filesystem.open_file(window.location, FileAccess.READ)
 		set_from_string(file.get_as_text())
 
 func set_from_string(text: String):
 	var lines = text.split('\n')
 	lines_text.text = "Lines: " + str(lines.size())
 	var file_size: int = text.length()
-	size_text.text = "Size: "+ System.format_bytes(file_size)
+	size_text.text = "Size: "+ Utils.format_bytes(file_size)
 	var words: int = text.split(" ", false).size()
 	words_text.text = "Words: " + str(words)
 	

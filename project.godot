@@ -24,6 +24,7 @@ config/icon="res://assets/higameos_logo.png"
 [autoload]
 
 System="*res://lib/system.gd"
+User="*uid://dbhvra7j86ar"
 
 [display]
 

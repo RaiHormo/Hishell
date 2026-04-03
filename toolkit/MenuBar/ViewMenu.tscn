@@ -37,6 +37,11 @@ layout_mode = 2
 size_flags_vertical = 0
 text = "Maximize"
 
+[node name="Raw" type="Button" parent="ViewMenu/Dropdown/List" unique_id=352154815]
+layout_mode = 2
+size_flags_vertical = 0
+text = "Raw View"
+
 [node name="IconSize" type="HSlider" parent="ViewMenu/Dropdown/List" unique_id=467544882]
 custom_minimum_size = Vector2(60, 70)
 layout_mode = 2
@@ -76,5 +81,6 @@ text = "Opacity"
 [connection signal="focus_exited" from="ViewMenu" to="." method="_on_focus_exited"]
 [connection signal="toggled" from="ViewMenu" to="." method="toggle"]
 [connection signal="pressed" from="ViewMenu/Dropdown/List/Maximize" to="." method="send" binds= ["window_control", "maximize_toggle"]]
+[connection signal="pressed" from="ViewMenu/Dropdown/List/Raw" to="." method="send" binds= ["add_prefix", "raw"]]
 [connection signal="value_changed" from="ViewMenu/Dropdown/List/IconSize" to="." method="send_value" binds= ["icon_size_slider"]]
 [connection signal="value_changed" from="ViewMenu/Dropdown/List/Opacity" to="." method="send_value" binds= ["opacity_slider"]]

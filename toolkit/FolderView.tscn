@@ -31,4 +31,3 @@ script = ExtResource("1_qprf8")
 visible = false
 layout_mode = 2
 text = "404"
-horizontal_alignment = 1

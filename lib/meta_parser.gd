@@ -7,8 +7,8 @@ static func get_folder_meta(path: String, data: String, section:= "", default: V
 	return config.get_value(section, data, default)
 
 static func get_folder_config(path: String):
-	path = System.abs_path(path)
-	if not FileAccess.file_exists(path+"/.meta"): return null
+	if not Filesystem.is_file(path+"/.meta"): return null
+	path = Filesystem.abs_path(path)
 	var config = ConfigFile.new()
 	config.load(path+"/.meta")
 	return config
@@ -20,7 +20,7 @@ static func folder_title(path: String) -> String:
 	else: return nam
 
 static func set_folder_meta(path: String, data: String, section: String, value: Variant):
-	path = System.abs_path(path)
+	path = Filesystem.abs_path(path)
 	if not System.root in path: return
 	var config = ConfigFile.new()
 	config.load(path+"/.meta")
@@ -28,8 +28,7 @@ static func set_folder_meta(path: String, data: String, section: String, value: 
 	config.save(path+"/.meta")
 
 static func get_cutsom_icon(path: String) -> String:
-	path = System.abs_path(path)
-	var dir = DirAccess.open(path)
+	var dir = Filesystem.open_folder(path)
 	if dir == null: return ""
 	var icon_name = ".icon"
 	for i in System.file_extensions["picture"]:

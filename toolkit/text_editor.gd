@@ -6,16 +6,16 @@ var location: String
 var current_text: String
 
 func init():
-	location = System.abs_path(window.location+target_file)
-	if FileAccess.file_exists(location):
-		var file : FileAccess = FileAccess.open(location, FileAccess.READ)
+	location = window.location + target_file
+	if Filesystem.is_file(location):
+		var file : FileAccess = Filesystem.open_file(location, FileAccess.READ)
 		$TextEdit.text = file.get_as_text()
 	if window.state == window.STATE_LOADING:
 		window.prev_size = Vector2(600, 500)
 
 func save():
-	if FileAccess.file_exists(location):
-		var file : FileAccess = FileAccess.open(location, FileAccess.WRITE)
+	if Filesystem.is_file(location):
+		var file : FileAccess = Filesystem.open_file(location, FileAccess.WRITE)
 		file.store_string($TextEdit.text)
 		file.close()
 

@@ -9,8 +9,6 @@ var wallpaper: TextureRect
 
 func init():
 	parse_folder()
-	if Meta.get_folder_meta(window.location, "Maximized", "LAUNCH"):
-		window.send("window_control", "maximize")
 	window.prev_size = get_optimal_size()
 	send("request_menu", "Create")
 	send("request_menu", "View")
@@ -19,8 +17,13 @@ func parse_folder():
 	error.hide()
 	wallpaper = window.get_node("Content/Wallpaper")
 	if not is_instance_valid(grid): return
-	var abs_location = System.abs_path(window.location)
-	if abs_location[-1] != '/': abs_location += '/'
+	var prefix = Filesystem.path_prefix(window.location)
+	var abs_location = Filesystem.abs_path(window.location)
+	if Filesystem.is_file(abs_location):
+		print(abs_location, abs_location.get_file())
+		abs_location = abs_location.replace(abs_location.get_file(), "")
+	abs_location = abs_location.replace(prefix+"://", "")
+	if not abs_location.ends_with('/'): abs_location += '/'
 	if not DirAccess.dir_exists_absolute(abs_location):
 		grid.hide()
 		window.title = "404"
@@ -29,8 +32,10 @@ func parse_folder():
 		push_error("Folder "+abs_location+ " wasn't found")
 		return
 	#var location_parts = abs_location.split("/", false)
-	files = DirAccess.get_files_at(abs_location).duplicate()
-	folders = DirAccess.get_directories_at(abs_location).duplicate()
+	var dir = Filesystem.open_folder(abs_location)
+	dir.include_hidden = window.config.get_value("VIEW", "ShowDotfiles", false)
+	files = dir.get_files().duplicate()
+	folders = dir.get_directories().duplicate()
 	grid.show()
 	for i in grid.get_children(): i.queue_free()
 	await get_tree().process_frame
@@ -53,7 +58,7 @@ func parse_folder():
 	view_apply()
 
 func view_apply():
-	var abs_location = System.abs_path(window.location)
+	var abs_location = Filesystem.abs_path(window.location)
 	
 	if wallpaper == null: wallpaper.hide()
 	var background_file = ".wallpaper"
@@ -102,12 +107,11 @@ func location_changed(_path: String):
 	parse_folder()
 
 func create(type: String):
-	var path = System.abs_path(window.location)
 	match type:
 		"folder":
-			var dir = DirAccess.open(path)
+			var dir = Filesystem.open_folder(window.location)
 			dir.make_dir("New Folder")
 		"text_file":
-			var file = FileAccess.open(path+"/New File.txt", FileAccess.WRITE)
+			var file = Filesystem.open_file(window.location+"/New File.txt", FileAccess.WRITE)
 			file.close()
 	parse_folder()

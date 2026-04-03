@@ -8,7 +8,7 @@ func _ready() -> void:
 
 func toggle(toggled_on: bool) -> void:
 	if toggled_on:
-		dropdown.theme = System.theme
+		dropdown.theme = ConfigManager.theme
 		dropdown.reparent(get_tree().root, true)
 		dropdown.show()
 		dropdown.global_position.y = global_position.y + size.y

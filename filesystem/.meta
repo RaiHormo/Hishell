@@ -5,9 +5,6 @@ Title="HiShell"
 
 Maximized=true
 
-[LAYOUT]
-Top = ["toolkit/PathBar"]
-
 [VIEW]
 
 GridHorizontalAlign=1
