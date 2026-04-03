@@ -66,13 +66,7 @@ static func copy_folder(new_folder_name : String, folder_to_copy : String, new_f
 		if f.ends_with(".remap"): continue
 		var to_copy := folder_to_copy + "/" + f
 		var new_path := new_dir_path + "/" + f
-		if f.ends_with(".gdc"):
-			var script: Script = load(to_copy.replace(".gdc", ".gd"))
-			var file := FileAccess.open(new_path.replace(".gdc", ".gd"), FileAccess.WRITE)
-			file.store_string(script.source_code)
-			file.close()
-		else:
-			DirAccess.copy_absolute(to_copy, new_path)
+		DirAccess.copy_absolute(to_copy, new_path)
 	var old_directories : PackedStringArray = dir.get_directories()
 	for d : String in old_directories:
 		copy_folder(d, folder_to_copy + "/" + d, new_dir_path)
