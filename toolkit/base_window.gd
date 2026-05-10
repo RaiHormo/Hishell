@@ -14,6 +14,7 @@ var title: String:
 		title = x
 var origin: Vector2
 var open_pos: Vector2
+var splash_size := Vector2(200, 200)
 var viewport: Viewport
 var components: Dictionary[String, Node]
 var parent: BaseWindow = null
@@ -36,26 +37,28 @@ const resize_margin = 24
 
 func _ready() -> void:
 	hide()
-	set_deferred("size", Vector2(200, 200))
-	if origin != Vector2.ZERO:
-		position = origin - Vector2(100, 100)
-	else: position = center_position()
-	if open_pos == Vector2.ZERO: open_pos = origin
-	#wrap_controls = false
-	#borderless = true
+	
+	set_deferred("size", splash_size)
 	scale = Vector2(0.5, 0.5)
 	modulate = Color.TRANSPARENT
 	content.hide()
-	title = Meta.folder_title(location)
-	name = title
 	splash.show()
+	
+	if origin != Vector2.ZERO:
+		position = origin - (splash_size)
+	else: 
+		position = center_position(splash_size)
+	if open_pos == Vector2.ZERO: open_pos = origin
+	title = Meta.folder_title(location)
 	if viewport != null:
 		focus_entered.connect(focus_window)
 	show()
-	if splash.has_node("Icon"):
-		splash.get_node("Icon").texture = await Thumbnail.get_icon_for(location, self)
-		if splash.has_node("Icon/Label"):
-			splash.get_node("Icon/Label").text = title
+	
+	if splash.has_node("Default/Icon"):
+		splash.get_node("Default/Icon").texture = await Thumbnail.get_icon_for(location, self)
+	if splash.has_node("Default/Label"):
+		splash.get_node("Default/Label").text = title
+	
 	theme = ConfigManager.theme
 	set_tweened("modulate", Color.WHITE)
 	set_tweened("scale", Vector2.ONE)
@@ -161,12 +164,14 @@ func create_content(type := Filesystem.get_file_type(location)):
 
 
 func setup_window():
+	name = title
 	link_components()
 	await send("init")
 	if state == STATE_LOADING:
-		resize(prev_size, open_pos - prev_size/2)
 		state = STATE_WINDOWED
-	splash.hide()
+		resize(prev_size, open_pos - prev_size/2)
+	Animator.fade_and_hide(splash, animation_speed)
+	Animator.show_and_fade(content, animation_speed)
 	content.show()
 	#wrap_controls = true
 	send("update_layout")
@@ -177,7 +182,7 @@ func setup_window():
 func _process(_delta: float) -> void:
 	match state:
 		STATE_LOADING:
-			pivot_offset = size/2
+			pass
 		STATE_WINDOWED:
 			if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT): return
 			var cursor_pos = get_viewport().get_mouse_position() - position
@@ -229,9 +234,7 @@ func limit_pos(pos: Vector2, siz:Vector2 = size):
 	return pos
 
 func set_tweened(property: StringName, value: Variant, node: Node = self) -> void:
-	var t = create_tween().set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
-	t.tween_property(node, NodePath(property), value, animation_speed)
-	await t.finished
+	await Animator.set_tweened(property, value, node, animation_speed)
 
 func enter_drag(mouse_pos: Vector2):
 	$Content.mouse_default_cursor_shape = Control.CURSOR_CAN_DROP
@@ -369,8 +372,8 @@ func opacity_slider(value: float) -> void:
 func is_root_window() -> bool:
 	return parent == null
 
-func center_position():
-	return viewport.get_visible_rect().get_center() - Vector2(prev_size/2)
+func center_position(from_size: Vector2 = prev_size) -> Vector2:
+	return viewport.get_visible_rect().get_center() - Vector2(from_size/2)
 
 func _on_content_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:

@@ -3,21 +3,166 @@
 [ext_resource type="Script" uid="uid://cehwmxfa6wv2a" path="res://lib/init.gd" id="1_ndipe"]
 [ext_resource type="Texture2D" uid="uid://bbi2rfqb6edfc" path="res://assets/higameos_logo.png" id="2_q8b75"]
 
-[node name="Boot" type="Control" unique_id=1861904215]
+[sub_resource type="Gradient" id="Gradient_ndipe"]
+interpolation_mode = 2
+interpolation_color_space = 2
+offsets = PackedFloat32Array(0, 0.10876133, 0.33383685, 0.5619335, 0.67824775, 0.76888216, 0.8761329, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1.007256, 1.007256, 1.007256, 1, 0.54850507, 0.38097912, 0.97789305, 1, 0.2258622, 0.5036984, 0.9470373, 1, 0.9656469, 0.56491876, 0.6913725, 1, 0.5459174, 0.91985154, 0.69438124, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_q8b75"]
+gradient = SubResource("Gradient_ndipe")
+
+[sub_resource type="Animation" id="Animation_itu32"]
+resource_name = "Boot"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Logo/Colors:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(-0.46651703, -2),
+"update": 0,
+"values": [Vector2(-1308, 1320), Vector2(-86, 97.00006)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Logo:scale")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 1),
+"transitions": PackedFloat32Array(2, 0.5, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.9, 0.9), Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="Animation_ndipe"]
+resource_name = "Done"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Logo:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(0.5, 1),
+"update": 0,
+"values": [Vector2(1, 1), Vector2(0.4, 0.4)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Logo:modulate")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 1), Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_gfk7f"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Logo/Colors:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-1308, 1320)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Logo:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Logo:modulate")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_sewwb"]
+_data = {
+&"Boot": SubResource("Animation_itu32"),
+&"Done": SubResource("Animation_ndipe"),
+&"RESET": SubResource("Animation_gfk7f")
+}
+
+[node name="Boot" type="Control" unique_id=352812757]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_ndipe")
 
 [node name="Logo" type="TextureRect" parent="." unique_id=400781035]
+clip_children = 1
+z_index = 1
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -100.0
+offset_right = 100.0
+offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
 texture = ExtResource("2_q8b75")
-stretch_mode = 3
+stretch_mode = 2
+
+[node name="Colors" type="TextureRect" parent="Logo" unique_id=317204264]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1408.0
+offset_top = 1220.0
+offset_right = 572.00024
+offset_bottom = 1480.0009
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -0.7853982
+texture = SubResource("GradientTexture1D_q8b75")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1564103461]
+libraries/ = SubResource("AnimationLibrary_sewwb")
+autoplay = &"RESET"

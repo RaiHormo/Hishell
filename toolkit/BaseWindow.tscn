@@ -52,6 +52,7 @@ offset_right = 386.0
 offset_bottom = 226.5
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme = ExtResource("1_g45aw")
@@ -142,11 +143,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Icon" type="TextureRect" parent="Splash" unique_id=1734033406]
+[node name="Default" type="VBoxContainer" parent="Splash" unique_id=1334425669]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="Splash/Default" unique_id=1734033406]
 custom_minimum_size = Vector2(86, 86)
 layout_mode = 2
 texture = ExtResource("8_58hpc")
 expand_mode = 1
 stretch_mode = 5
+
+[node name="Label" type="Label" parent="Splash/Default" unique_id=676070483]
+layout_mode = 2
+text = "Window Title"
+horizontal_alignment = 1
 
 [connection signal="gui_input" from="Content" to="." method="_on_content_gui_input"]
