@@ -1,13 +1,13 @@
 extends Node
 
-const always_reinstall := true
+const always_reinstall := false
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 func _ready() -> void:
 	System.init = self
 	get_window().content_scale_factor = DisplayServer.screen_get_scale()
 	animation_player.play("Boot")
-	if always_reinstall and DirAccess.dir_exists_absolute("user://filesystem"):
+	if (always_reinstall or Input.is_physical_key_pressed(KEY_CTRL)) and DirAccess.dir_exists_absolute("user://filesystem"):
 		Filesystem.delete_folder(System.root)
 	if not DirAccess.dir_exists_absolute(System.root) or always_reinstall:
 		await install()

@@ -44,11 +44,12 @@ func _ready() -> void:
 	content.hide()
 	splash.show()
 	
-	if origin != Vector2.ZERO:
-		position = origin - (splash_size)
-	else: 
-		position = center_position(splash_size)
-	if open_pos == Vector2.ZERO: open_pos = origin
+	if origin == Vector2.ZERO:
+		prints(get_window().size, get_window().content_scale_factor)
+		origin = (Vector2(get_window().size) / get_window().content_scale_factor) / 2
+	position = origin - (splash_size/2)
+	if open_pos == Vector2.ZERO:
+		open_pos = origin
 	title = Meta.folder_title(location)
 	if viewport != null:
 		focus_entered.connect(focus_window)
@@ -68,12 +69,13 @@ func _ready() -> void:
 		var parent_pos = Vector2.ZERO
 		if parent != null:
 			parent_pos = parent.position
-		while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			position = get_viewport().get_mouse_position() - size/2 - parent_pos
-			check_dragndrop(position)
-			await System.wait()
-		open_pos = get_viewport().get_mouse_position()
-		end_drag()
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+				position = get_viewport().get_mouse_position() - size/2 - parent_pos
+				check_dragndrop(position)
+				await System.wait()
+			open_pos = get_viewport().get_mouse_position()
+			end_drag()
 	while timer.time_left != 0: await System.wait()
 	state = STATE_LOADING
 	send("open")
@@ -169,7 +171,7 @@ func setup_window():
 	await send("init")
 	if state == STATE_LOADING:
 		state = STATE_WINDOWED
-		resize(prev_size, open_pos - prev_size/2)
+		resize(prev_size, open_pos - splash_size/2)
 	Animator.fade_and_hide(splash, animation_speed)
 	Animator.show_and_fade(content, animation_speed)
 	content.show()
@@ -373,7 +375,11 @@ func is_root_window() -> bool:
 	return parent == null
 
 func center_position(from_size: Vector2 = prev_size) -> Vector2:
-	return viewport.get_visible_rect().get_center() - Vector2(from_size/2)
+	if parent != null:
+		return (parent.size / 2) - Vector2(from_size/2)
+	else:
+		print(Vector2(get_viewport().size / 2))
+		return Vector2(get_viewport().size / 2) - Vector2(from_size/2)
 
 func _on_content_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
