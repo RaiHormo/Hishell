@@ -64,12 +64,19 @@ func update_layout():
 
 
 func _on_button_pressed() -> void:
-	var result = await window.navigate(window.location+filename, "Auto", self)
-	match result:
-		0:
-			modulate = Color.WHITE
-		1:
-			unfade()
+	if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+		System.open_context_menu(window.location+filename, self)
+	else:
+		var result: int
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
+			result = await window.navigate(window.location+filename, "Window", self)
+		else:
+			result = await window.navigate(window.location+filename, "Auto", self)
+		match result:
+			0:
+				modulate = Color.WHITE
+			1:
+				unfade()
 
 func fade():
 	window.set_tweened("modulate:a", 0, self)

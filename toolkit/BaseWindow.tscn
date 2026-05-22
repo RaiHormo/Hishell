@@ -159,4 +159,17 @@ layout_mode = 2
 text = "Window Title"
 horizontal_alignment = 1
 
+[node name="DropToolip" type="PanelContainer" parent="." unique_id=2014774750]
+visible = false
+layout_mode = 0
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 63.0
+offset_bottom = 34.0
+
+[node name="Label" type="Label" parent="DropToolip" unique_id=1715704379]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Open"
+
 [connection signal="gui_input" from="Content" to="." method="_on_content_gui_input"]

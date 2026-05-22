@@ -26,6 +26,10 @@ config/icon="res://assets/higameos_logo.png"
 System="*res://lib/system.gd"
 User="*uid://dbhvra7j86ar"
 
+[debug]
+
+gdscript/warnings/int_as_enum_without_match=0
+
 [display]
 
 window/size/viewport_width=1080

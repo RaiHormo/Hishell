@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://bo2a2bryp5sca"]
+
+[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_fgy8p"]
+[ext_resource type="Script" uid="uid://wrmyqpyfbyll" path="res://toolkit/context_menu.gd" id="2_o6g3w"]
+
+[node name="ContextMenu" type="PopupMenu" unique_id=199873777]
+oversampling_override = 1.0
+title = "Context Menu"
+size = Vector2i(200, 319)
+visible = true
+theme = ExtResource("1_fgy8p")
+item_count = 9
+item_0/text = "Open"
+item_0/id = 2
+item_1/text = "Open With..."
+item_1/id = 4
+item_1/disabled = true
+item_2/text = "Edit"
+item_2/id = 3
+item_2/separator = true
+item_3/text = "Copy"
+item_3/id = 0
+item_4/text = "Cut"
+item_4/id = 1
+item_5/text = "Duplicate"
+item_5/id = 7
+item_6/text = "Create Link"
+item_6/id = 6
+item_7/text = "Move To"
+item_7/id = 8
+item_7/separator = true
+item_8/text = "Trash"
+item_8/id = 5
+script = ExtResource("2_o6g3w")
+
+[connection signal="id_pressed" from="." to="." method="_on_id_pressed"]
+[connection signal="popup_hide" from="." to="." method="_on_popup_hide"]

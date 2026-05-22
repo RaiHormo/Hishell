@@ -29,7 +29,10 @@ func parse_folder():
 		window.title = "404"
 		error.text = "404"
 		error.show()
-		push_error("Folder "+abs_location+ " wasn't found")
+		if window.state == window.STATE_WINDOWED:
+			send("close")
+		else:
+			await System.dialog("Folder "+abs_location+ " doesn't exist", "Folder View")
 		return
 	#var location_parts = abs_location.split("/", false)
 	var dir = Filesystem.open_folder(abs_location)

@@ -1,0 +1,194 @@
+[gd_scene format=3 uid="uid://gpi4a6vutgwd"]
+
+[ext_resource type="Theme" uid="uid://vwqrw53ttwhu" path="res://assets/themes/Default.tres" id="1_8j23e"]
+[ext_resource type="Script" uid="uid://dgivrxgjfa86n" path="res://toolkit/dialog_window.gd" id="2_b8l2o"]
+[ext_resource type="Shader" uid="uid://suc7mhiv6xfw" path="res://lib/Blur.gdshader" id="3_as7w2"]
+[ext_resource type="Texture2D" uid="uid://bi6gfunkqm4c7" path="res://assets/cyan.png" id="4_w5dn4"]
+[ext_resource type="Texture2D" uid="uid://bjgmra3wsayvr" path="res://assets/icons/file.svg" id="8_mltpj"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r7m48"]
+shader = ExtResource("3_as7w2")
+shader_parameter/strength = 15.0000007125
+shader_parameter/sample_power = 3
+shader_parameter/is_canvas_group = true
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v0la3"]
+bg_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4itee"]
+bg_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ukgrn"]
+content_margin_left = 12.0
+content_margin_top = 12.0
+content_margin_right = 12.0
+content_margin_bottom = 12.0
+bg_color = Color(0, 0, 0, 0.5176471)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_682iv"]
+
+[node name="Window" type="Control" unique_id=496038198]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -208.0
+offset_top = -103.0
+offset_right = 207.0
+offset_bottom = 102.5
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset_ratio = Vector2(0.5, 0.5)
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme = ExtResource("1_8j23e")
+script = ExtResource("2_b8l2o")
+
+[node name="Blur" type="PanelContainer" parent="." unique_id=1837327616]
+material = SubResource("ShaderMaterial_r7m48")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_v0la3")
+
+[node name="Background" type="PanelContainer" parent="Blur" unique_id=404011085]
+modulate = Color(0, 0, 0, 0.7176471)
+layout_mode = 2
+
+[node name="Content" type="PanelContainer" parent="." unique_id=500661032]
+clip_children = 1
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_4itee")
+
+[node name="Wallpaper" type="TextureRect" parent="Content" unique_id=985723819]
+visible = false
+layout_mode = 2
+texture = ExtResource("4_w5dn4")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Container" type="VBoxContainer" parent="Content" unique_id=1195486355]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Top" type="PanelContainer" parent="Content/Container" unique_id=1508801765]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxFlat_ukgrn")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Top" unique_id=1982816817]
+layout_mode = 2
+
+[node name="HeaderLabel" type="Label" parent="Content/Container/Top/HBoxContainer" unique_id=1542879400]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Alert!"
+horizontal_alignment = 1
+
+[node name="Middle" type="PanelContainer" parent="Content/Container" unique_id=568041948]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_682iv")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Middle" unique_id=2071519679]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="ContentLabel" type="RichTextLabel" parent="Content/Container/Middle/HBoxContainer" unique_id=400156053]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+text = "A very important dialog message."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Bottom" type="PanelContainer" parent="Content/Container" unique_id=1543853928]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 1
+theme_override_styles/panel = SubResource("StyleBoxEmpty_682iv")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Content/Container/Bottom" unique_id=980556254]
+layout_mode = 2
+
+[node name="OK" type="Button" parent="Content/Container/Bottom/HBoxContainer" unique_id=601559816]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OK"
+
+[node name="CANCEL" type="Button" parent="Content/Container/Bottom/HBoxContainer" unique_id=212415639]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+size_flags_horizontal = 3
+text = "OK"
+
+[node name="Splash" type="CenterContainer" parent="." unique_id=1052120785]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Default" type="VBoxContainer" parent="Splash" unique_id=1334425669]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Icon" type="TextureRect" parent="Splash/Default" unique_id=1734033406]
+custom_minimum_size = Vector2(86, 86)
+layout_mode = 2
+texture = ExtResource("8_mltpj")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Label" type="Label" parent="Splash/Default" unique_id=676070483]
+layout_mode = 2
+text = "Window Title"
+horizontal_alignment = 1
+
+[node name="DropToolip" type="PanelContainer" parent="." unique_id=2014774750]
+visible = false
+layout_mode = 0
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 63.0
+offset_bottom = 34.0
+
+[node name="Label" type="Label" parent="DropToolip" unique_id=1715704379]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Open"
+
+[connection signal="gui_input" from="Content" to="." method="_on_content_gui_input"]
+[connection signal="pressed" from="Content/Container/Bottom/HBoxContainer/OK" to="." method="_on_ok_pressed"]
+[connection signal="pressed" from="Content/Container/Bottom/HBoxContainer/CANCEL" to="." method="_on_cancel_pressed"]

@@ -15,7 +15,7 @@ var title: String:
 var origin: Vector2
 var open_pos: Vector2
 var splash_size := Vector2(200, 200)
-var viewport: Viewport
+@onready var viewport: Viewport = get_viewport()
 var components: Dictionary[String, Node]
 var parent: BaseWindow = null
 @export var animation_speed:= 0.3
@@ -27,6 +27,7 @@ var prev_size: Vector2 = Vector2(450, 300):
 @onready var splash: Control  = $Splash
 @onready var content: Control = $Content
 @onready var background: Control  = $Blur
+@onready var drop_toolip: PanelContainer = $DropToolip
 var drag_mouse_pos: Vector2
 var active := false
 var resizable:= 0
@@ -37,15 +38,14 @@ const resize_margin = 24
 
 func _ready() -> void:
 	hide()
-	
+	drop_toolip.hide()
 	set_deferred("size", splash_size)
-	scale = Vector2(0.5, 0.5)
+	scale = Vector2(0.8, 0.8)
 	modulate = Color.TRANSPARENT
 	content.hide()
 	splash.show()
 	
 	if origin == Vector2.ZERO:
-		prints(get_window().size, get_window().content_scale_factor)
 		origin = (Vector2(get_window().size) / get_window().content_scale_factor) / 2
 	position = origin - (splash_size/2)
 	if open_pos == Vector2.ZERO:
@@ -66,16 +66,9 @@ func _ready() -> void:
 	var timer = get_tree().create_timer(animation_speed)
 	if draggable:
 		drag_mouse_pos = size/2
-		var parent_pos = Vector2.ZERO
-		if parent != null:
-			parent_pos = parent.position
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-				position = get_viewport().get_mouse_position() - size/2 - parent_pos
-				check_dragndrop(position)
-				await System.wait()
-			open_pos = get_viewport().get_mouse_position()
-			end_drag()
+			await handle_dragndrop()
+			return
 	while timer.time_left != 0: await System.wait()
 	state = STATE_LOADING
 	send("open")
@@ -95,11 +88,52 @@ func send(message: String, value: Variant = null, target: String = ""):
 				if value != null: await component.call(message, value)
 				else: await component.call(message)
 
+func handle_dragndrop():
+	var parent_pos := Vector2.ZERO
+	if parent != null:
+		parent_pos = parent.position
+	var target: BaseWindow = System.root_window()
+	var frame_count := 0
+	var checkpoint := 0
+	var action := "open"
+	while Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		position = get_viewport().get_mouse_position() - size/2 - parent_pos
+		if frame_count - checkpoint > 30:
+			var action_text := "Open"
+			target = check_dragndrop(position)
+			if target == System.root_window():
+				action = "open"
+			elif Filesystem.is_folder(target.location):
+				action_text = "Move into %s"%[target.title]
+				action = "move"
+			else:
+				action = "open"
+			drop_toolip.show()
+			drop_toolip.get_node(^"Label").text = action_text
+			if action == "open":
+				set_tweened("scale", Vector2(1, 1))
+			else:
+				set_tweened("scale", Vector2(0.5, 0.5))
+			checkpoint = frame_count
+		await System.wait()
+		frame_count += 1
+	end_drag()
+	match action:
+		"open":
+			open_pos = get_viewport().get_mouse_position()
+			state = STATE_LOADING
+			send("open")
+		"move":
+			Filesystem.move(location, target.location)
+			System.refresh_all()
+			close()
+
 func open():
 	create_content()
 	setup_window()
-	if config.get_value("LAUNCH", "Maximized", false):
+	if config != null and config.get_value("LAUNCH", "Maximized", false):
 		send("window_control", "maximize")
+	focus_window()
 
 func link_components(node: Node = self):
 	for i in node.get_children():
@@ -111,12 +145,15 @@ func link_components(node: Node = self):
 
 func create_config(type: String):
 	if not Filesystem.exists(ConfigManager.config_path+"layouts/default.cfg"):
-		System.dialog("Something went really wrong, default config not found.", "Error")
-		close()
+		var error := await System.dialog(
+		"Something went really wrong, default config not found. You might have deleted or moved something important.", 
+		"Fatal Error", ["Ignore", "Reinstall"])
+		if error == 1:
+			System.reboot(true)
 		return
 	config = ConfigManager.get_config_file("layouts/default.cfg")
 	ConfigManager.merge_config(ConfigManager.get_config_file("layouts/"+type+".cfg"), config)
-	if config == null: 
+	if config == null:
 		close()
 		return
 	if not config.get_value("META", "IgnoreMeta", false):
@@ -134,6 +171,8 @@ func create_content(type := Filesystem.get_file_type(location)):
 		close()
 		return
 	create_config(type)
+	if config == null: 
+		return
 	for container in config.get_section_keys("LAYOUT"):
 		var container_node = get_node_or_null("%"+container)
 		if container_node != null:
@@ -250,15 +289,21 @@ func end_drag():
 	$Content.mouse_default_cursor_shape = Control.CURSOR_ARROW
 	set_tweened("scale", Vector2.ONE)
 	set_tweened("position", limit_pos(position))
+	drop_toolip.hide()
 
 func size_changed() -> void:
 	send("update_layout")
 
-func check_dragndrop(pos := position):
-	for window: BaseWindow in System.windows:
+func check_dragndrop(pos := position) -> BaseWindow:
+	var target := System.root_window()
+	var window_list := System.windows.duplicate()
+	#window_list.reverse()
+	for window: BaseWindow in window_list:
 		if window.get_rect().has_point(pos):
-			print(window.title)
+			target = window
+			print(target.title)
 			break
+	return target
 
 func update_layout():
 	if state == STATE_MAXIMIZED:
@@ -279,7 +324,7 @@ func update_layout():
 	send("update")
 
 
-func navigate(path: String, type: String = "Auto", foc: Node = null):
+func navigate(path: String, type: String = "Auto", foc: Node = null) -> int:
 	if type == "Auto":
 		type = config.get_value("NAVIGATION", "NavigationType", "Auto")
 		if type == "Auto" and state == STATE_MAXIMIZED:
@@ -378,7 +423,6 @@ func center_position(from_size: Vector2 = prev_size) -> Vector2:
 	if parent != null:
 		return (parent.size / 2) - Vector2(from_size/2)
 	else:
-		print(Vector2(get_viewport().size / 2))
 		return Vector2(get_viewport().size / 2) - Vector2(from_size/2)
 
 func _on_content_gui_input(event: InputEvent) -> void:

@@ -53,6 +53,20 @@ shadow_color = Color(0, 0, 0, 0.19215687)
 shadow_size = 12
 shadow_offset = Vector2(0, 4)
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mictk"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+bg_color = Color(0.133333, 0.133333, 0.133333, 1)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0, 0, 0, 0.19215687)
+shadow_size = 12
+shadow_offset = Vector2(0, 4)
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_ng6j3"]
 content_margin_left = 12.0
 content_margin_top = 12.0
@@ -97,6 +111,8 @@ MarginContainer/constants/margin_left = 12
 MarginContainer/constants/margin_right = 12
 MarginContainer/constants/margin_top = 12
 PanelContainer/styles/panel = SubResource("StyleBoxFlat_ng6j3")
+PopupMenu/colors/font_accelerator_color = Color(0.69803923, 0.69803923, 0.69803923, 0.3372549)
+PopupMenu/styles/panel = SubResource("StyleBoxFlat_mictk")
 ScrollContainer/styles/panel = SubResource("StyleBoxEmpty_ng6j3")
 TextEdit/colors/background_color = Color(0, 0, 0, 0)
 TextEdit/colors/selection_color = Color(0.38410467, 0.26739135, 0.7320582, 1)

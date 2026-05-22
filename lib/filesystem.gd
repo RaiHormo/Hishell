@@ -11,7 +11,11 @@ static func current_path(scene: Node) -> String:
 	if window is BaseWindow:
 		return window.location
 	else: return ""
-	
+
+static func cleanup() -> void:
+	rm_rf("~/trash", [".meta", ".icon.svg"])
+	rm_rf("~/clipboard", [".meta", ".icon.svg"])
+
 static func get_file_type(location: String) -> String:
 	if "://" in location:
 		var prefix := path_prefix(location)
@@ -28,9 +32,51 @@ static func get_file_type(location: String) -> String:
 		return "unknown"
 	return "invalid"
 
+static func link(location: String, to: String, new_name = just_the_name(location)) -> void:
+	location = abs_path(location)
+	to = abs_path(to)
+	if exists(to+new_name):
+		return link(location, to, new_name + " (Link)")
+	var dir := open_folder(to)
+	dir.create_link(location, to+new_name)
+	print("Linked %s to %s as %s"%[location, to, new_name])
+
+static func move(location: String, to: String) -> void:
+	location = abs_path(location)
+	to = abs_path(to)
+	if location == to:
+		System.dialog("Can't move a directory into itself.", "Error Moving Directory")
+		return
+	if location in to:
+		System.dialog("Can't move a directory into one of it's sub-directories.", "Error Moving Directory")
+		return
+	if copy(location, to) == OK:
+		delete(location)
+
+static func copy(location: String, to: String) -> Error:
+	location = abs_path(location)
+	to = abs_path(to)
+	if (location == to or location.get_base_dir() == to): 
+		return ERR_ALREADY_EXISTS
+	if not exists(to): 
+		DirAccess.make_dir_recursive_absolute(to)
+	if is_file(location):
+		var err := DirAccess.copy_absolute(location, to+location.get_file())
+		return err
+	elif is_folder(location):
+		var new_name = just_the_name(location)
+		print(just_the_name(location))
+		if copy_folder(new_name, location, to) == "":
+			return ERR_UNAVAILABLE
+	else:
+		printerr("No such file or directory: ", location)
+		return ERR_FILE_NOT_FOUND
+	return OK
+
 ## Copy the contents of a folder into a new folder, and return the new folders absolute path
 static func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_location : String) -> String:
 	new_folder_location = abs_path(new_folder_location)
+	folder_to_copy = abs_path(folder_to_copy)
 	print("Copying folder ", folder_to_copy, " to ", new_folder_location)
 	
 	# Handle path issues
@@ -73,21 +119,65 @@ static func copy_folder(new_folder_name : String, folder_to_copy : String, new_f
 	
 	return new_dir_path
 
-static func delete_folder(directory: String) -> void:
+static func delete(location: String):
+	if is_file(location):
+		DirAccess.remove_absolute(abs_path(location))
+	elif is_folder(location):
+		delete_folder(location)
+	else:
+		System.dialog("No such file or directory: "+ location, "Delete")
+
+static func trash(location: String):
+	var to := abs_path("~/trash")
+	location = abs_path(location)
+	if location == to:
+		if await System.dialog("Empty trash?", "Trash", ["Yes", "No"]) == 0:
+			Filesystem.cleanup()
+		return
+	if location in to or to in location:
+		if await System.dialog("Can't trash '%s'. Delete instead?"%[rel_path(location)], "Trash", ["Yes", "No"]) == 0:
+			delete_folder(location)
+		return
+	if not exists(to): 
+		DirAccess.make_dir_absolute(to)
+	if is_file(location):
+		var err := DirAccess.copy_absolute(location, to+location.get_file())
+		if err != OK:
+			printerr(err)
+		err = DirAccess.remove_absolute(location)
+		if err != OK:
+			printerr(err)
+	elif is_folder(location):
+		copy_folder(location.get_file(), location, to)
+		delete_folder(location)
+
+static func delete_folder(directory: String, just_empty_it:= false) -> void:
 	directory = abs_path(directory)
+	if not exists(directory): return
 	print("Deleting ", directory)
 	if OS.get_name() == "Web":
-		var dir := DirAccess.open(directory)
-		dir.include_hidden = true
-		for dir_name in dir.get_directories():
-			if not dir.is_link(directory):
-				delete_folder(directory.path_join(dir_name))
-		for file_name in dir.get_files():
-			if not dir.is_link(directory):
-				DirAccess.remove_absolute(directory.path_join(file_name))
-		if dir.remove(directory) == 1:
-			print("Directory not empty: ", dir.get_directories())
+		rm_rf(directory)
 	else: OS.move_to_trash(directory)
+	if just_empty_it:
+		DirAccess.make_dir_absolute(directory)
+
+static func rm_rf(directory: String, whitelist: Array[String] = [], include_hidden := true) -> void:
+	if not is_folder(directory): return
+	print("Recursively deleting ", directory)
+	directory = abs_path(directory)
+	var dir := DirAccess.open(directory)
+	dir.include_hidden = include_hidden
+	if System.root not in directory: 
+		print("Dangerous, aborting")
+		return
+	for dir_name in dir.get_directories():
+		if dir_name in whitelist: continue
+		if not dir.is_link(directory):
+			rm_rf(directory.path_join(dir_name))
+	for file_name in dir.get_files():
+		if file_name in whitelist: continue
+		if not dir.is_link(directory):
+			DirAccess.remove_absolute(directory.path_join(file_name))
 
 static func path_prefix(path: String, with_the_thingy := false) -> String:
 	var ex = Utils.regex(path, "^(.*)://")
@@ -96,6 +186,8 @@ static func path_prefix(path: String, with_the_thingy := false) -> String:
 	return string
 
 static func abs_path(path: String, fix := true) -> String:
+	if path.begins_with("~"):
+		path = path.replace("~/", User.user_path())
 	if "://" in path and not path.begins_with("user://") and not path.begins_with("res://"):
 		var prefix = Utils.regex(path, "^.*://")
 		print(prefix.get_string())
@@ -114,7 +206,7 @@ static func rel_path(path: String) -> String:
 	return path
 
 static func fix_path(path: String) -> String:
-	if '~' in path:
+	if path.begins_with("~"):
 		path = path.replace("~/", User.user_path())
 	if path.ends_with("/"):
 		if is_file(path.left(-1)):
@@ -145,3 +237,10 @@ static func open_file(path: String, mode: FileAccess.ModeFlags = FileAccess.READ
 	if not path.begins_with("/"):
 		path = abs_path(path)
 	return FileAccess.open(path, mode)
+
+static func just_the_name(location: String) -> String:
+	return location.split('/', false)[-1]
+
+static func parent_folder(location: String) -> String:
+	var prt := abs_path(location.rstrip("/").get_base_dir())
+	return rel_path(prt)
