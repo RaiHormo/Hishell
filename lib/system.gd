@@ -40,9 +40,11 @@ func root_window() -> BaseWindow:
 		if i is BaseWindow: return i
 	return null
 
-func dialog(message: String, title: String = "Info", options: PackedStringArray = ["OK"], parent := System.root_window()) -> int:
+func dialog(message: String, title: String = "Info", options: PackedStringArray = ["OK"], parent: Node = System.root_window()) -> int:
 	print(title, ": ", message)
 	var window: DialogWindow = (load("res://toolkit/DialogWindow.tscn") as PackedScene).instantiate()
+	if parent == null:
+		parent = get_tree().root
 	parent.add_child(window)
 	window.parent = parent
 	window.get_node("%ContentLabel").text = message

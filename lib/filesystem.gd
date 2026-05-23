@@ -50,10 +50,10 @@ static func move(location: String, to: String) -> void:
 	if location in to:
 		System.dialog("Can't move a directory into one of it's sub-directories.", "Error Moving Directory")
 		return
-	if copy(location, to) == OK:
+	if await copy(location, to) == OK:
 		delete(location)
 
-static func copy(location: String, to: String) -> Error:
+static func copy(location: String, to: String, overwrite := false, new_name := just_the_name(location)) -> Error:
 	location = abs_path(location)
 	to = abs_path(to)
 	if (location == to or location.get_base_dir() == to): 
@@ -61,10 +61,14 @@ static func copy(location: String, to: String) -> Error:
 	if not exists(to): 
 		DirAccess.make_dir_recursive_absolute(to)
 	if is_file(location):
-		var err := DirAccess.copy_absolute(location, to+location.get_file())
+		var new_path = to.path_join(new_name)
+		if not overwrite:
+			if is_file(new_path):
+				if await System.dialog("File '%s' already exists."%[new_path], "Copy", ["Overwrite", "Abort"]):
+					return ERR_ALREADY_EXISTS
+		var err := DirAccess.copy_absolute(location, new_path)
 		return err
 	elif is_folder(location):
-		var new_name = just_the_name(location)
 		print(just_the_name(location))
 		if copy_folder(new_name, location, to) == "":
 			return ERR_UNAVAILABLE
@@ -74,27 +78,26 @@ static func copy(location: String, to: String) -> Error:
 	return OK
 
 ## Copy the contents of a folder into a new folder, and return the new folders absolute path
-static func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_location : String) -> String:
+static func copy_folder(new_folder_name : String, folder_to_copy : String, new_folder_location : String, overwrite := false, recursively := true) -> String:
 	new_folder_location = abs_path(new_folder_location)
 	folder_to_copy = abs_path(folder_to_copy)
 	print("Copying folder ", folder_to_copy, " to ", new_folder_location)
 	
 	# Handle path issues
 	if not DirAccess.dir_exists_absolute(folder_to_copy):
-		printerr("Invalid folder to copy '" + folder_to_copy + ".")
+		printerr("Invalid folder to copy '" + folder_to_copy + "'.")
 		return ""
 	if not DirAccess.dir_exists_absolute(new_folder_location):
-		printerr("Invalid copy location '" + new_folder_location + ".")
+		printerr("Invalid copy location '" + new_folder_location + "'.")
 		return ""
 
 	# Get new location contents, folders and files
 	var copy_location_contents : PackedStringArray = DirAccess.get_directories_at(new_folder_location)
 	copy_location_contents.append_array(DirAccess.get_files_at(new_folder_location))
 	
-	# Make sure new name is valid by adding numbers to the end,
-	# so we won't overrite any existing files / folders
-	while new_folder_name in copy_location_contents:
-		new_folder_name += str(randi_range(0, 9))
+	if not overwrite:
+		while new_folder_name in copy_location_contents:
+			new_folder_name += " (%d)"%[randi_range(1, 9)]
 	
 	# Make new directory 
 	var new_dir_path : String = new_folder_location + new_folder_name
@@ -110,12 +113,13 @@ static func copy_folder(new_folder_name : String, folder_to_copy : String, new_f
 		if f.ends_with(".uid"): continue
 		if f.ends_with(".import"): continue
 		if f.ends_with(".remap"): continue
-		var to_copy := folder_to_copy + "/" + f
-		var new_path := new_dir_path + "/" + f
+		var to_copy := folder_to_copy.path_join(f)
+		var new_path := new_dir_path.path_join(f)
 		DirAccess.copy_absolute(to_copy, new_path)
 	var old_directories : PackedStringArray = dir.get_directories()
-	for d : String in old_directories:
-		copy_folder(d, folder_to_copy + "/" + d, new_dir_path)
+	if recursively:
+		for d : String in old_directories:
+			copy_folder(d, folder_to_copy.path_join(d), new_dir_path)
 	
 	return new_dir_path
 
@@ -157,6 +161,7 @@ static func delete_folder(directory: String, just_empty_it:= false) -> void:
 	print("Deleting ", directory)
 	if OS.get_name() == "Web":
 		rm_rf(directory)
+		DirAccess.remove_absolute(directory)
 	else: OS.move_to_trash(directory)
 	if just_empty_it:
 		DirAccess.make_dir_absolute(directory)
@@ -194,7 +199,8 @@ static func abs_path(path: String, fix := true) -> String:
 		if prefix != null:
 			path = path.replace(prefix.get_string(), "")
 			if not path.begins_with(System.root_name): path = "/" + path
-	path = ProjectSettings.globalize_path(path)
+	if not path.begins_with("res://"):
+		path = ProjectSettings.globalize_path(path)
 	path = path.replace(System.root_name, System.root)
 	if fix:
 		path = fix_path(path)

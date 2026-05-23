@@ -144,14 +144,15 @@ func link_components(node: Node = self):
 		link_components(i)
 
 func create_config(type: String):
-	if not Filesystem.exists(ConfigManager.config_path+"layouts/default.cfg"):
+	if not Filesystem.exists(ConfigManager.config_path.path_join("layouts/default.cfg")):
+		config = ConfigManager.get_fallback_config()
 		var error := await System.dialog(
 		"Something went really wrong, default config not found. You might have deleted or moved something important.", 
 		"Fatal Error", ["Ignore", "Reinstall"])
 		if error == 1:
 			System.reboot(true)
-		return
-	config = ConfigManager.get_config_file("layouts/default.cfg")
+	else:
+		config = ConfigManager.get_config_file("layouts/default.cfg")
 	ConfigManager.merge_config(ConfigManager.get_config_file("layouts/"+type+".cfg"), config)
 	if config == null:
 		close()

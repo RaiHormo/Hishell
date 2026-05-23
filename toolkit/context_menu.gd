@@ -44,7 +44,7 @@ func _on_id_pressed(id: int) -> void:
 		CUT:
 			Filesystem.move(location, "~/clipboard")
 		DUPLICATE:
-			Filesystem.copy(location, Filesystem.parent_folder(location))
+			Filesystem.copy(location, Filesystem.parent_folder(location), false, Filesystem.just_the_name(location) + "-copy")
 		LINK:
 			Filesystem.link(location, Filesystem.parent_folder(location))
 		TRASH:

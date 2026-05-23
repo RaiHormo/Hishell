@@ -27,4 +27,4 @@ func get_usernames() -> Array[String]:
 
 func create_user_folder(username: String) -> String:
 	print("Creating user folder for ", username)
-	return Filesystem.copy_folder(username, "res://filesystem/default-user", "user://filesystem")
+	return Filesystem.copy_folder(username, "res://filesystem/default-user", "user://filesystem", true)

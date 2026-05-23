@@ -19,14 +19,16 @@ static func set_config(path: String, data: String, section: String, set_to: Vari
 	config.save(real_path)
 
 static func get_config_file(path: String) -> ConfigFile:
-	var real_path := Filesystem.abs_path(config_path+path)
+	var real_path = path
+	if not path.begins_with("/") and not path.begins_with("res://"):
+		real_path = Filesystem.abs_path(config_path.path_join(path))
 	if FileAccess.file_exists(real_path):
 		var config = ConfigFile.new()
 		config.load(real_path)
 		return config
 	else:
 		System.dialog("Failed to get config: %s"%[path], "Error")
-		return null
+		return get_fallback_config(path)
 
 static func merge_config(source: ConfigFile, destination: ConfigFile) -> ConfigFile:
 	for section in source.get_sections():
@@ -34,3 +36,8 @@ static func merge_config(source: ConfigFile, destination: ConfigFile) -> ConfigF
 			var value = source.get_value(section, key)
 			destination.set_value(section, key, value)
 	return destination
+
+static func get_fallback_config(path: String = "layouts/default.cfg") -> ConfigFile: 
+	var config := ConfigFile.new()
+	config.load("res://filesystem/default-user/config/".path_join(path))
+	return config

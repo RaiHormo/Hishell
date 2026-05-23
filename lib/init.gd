@@ -11,9 +11,17 @@ func _ready() -> void:
 	get_window().content_scale_factor = DisplayServer.screen_get_scale()
 	animation_player.play("Boot")
 	if reinstall and DirAccess.dir_exists_absolute("user://filesystem"):
-		Filesystem.delete_folder(System.root)
+		if OS.get_name() == "Web":
+			JavaScriptBridge.eval("window.indexedDB.databases().then(dbs => { dbs.forEach(db => window.indexedDB.deleteDatabase(db.name)); })")
+			JavaScriptBridge.eval('window.location.reload(true);')
+			return
+		else:
+			Filesystem.delete_folder(System.root)
 	if not DirAccess.dir_exists_absolute(System.root) or reinstall:
 		await install()
+	if not DirAccess.dir_exists_absolute(System.root):
+		status.text = "Failed to copy files"
+		return
 	User.current = User.users[0]
 	Filesystem.cleanup()
 	
@@ -35,9 +43,11 @@ func _ready() -> void:
 func install():
 	status.text = "Installing..."
 	print("Starting installation")
-	Filesystem.copy_folder("filesystem", "res://filesystem", "user://")
-	System.root = Filesystem.abs_path("user://filesystem")
-	for i in User.get_usernames():
-		User.create_user_folder(i)
-	Filesystem.delete_folder(System.root+"/default-user")
-	print("Installed!")
+	if Filesystem.copy_folder("filesystem", "res://filesystem", "user://", true, false).is_empty():
+		print("Couldn't copy filesystem to user://")
+	else:
+		System.root = Filesystem.abs_path("user://filesystem")
+		for i in User.get_usernames():
+			User.create_user_folder(i)
+		Filesystem.delete_folder(System.root.path_join("/default-user"))
+		print("Installed!")

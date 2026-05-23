@@ -51,11 +51,11 @@ func parse_folder():
 		slot.set_to("")
 	for folder in folders:
 		var slot = grid.get_child(i)
-		slot.set_to(folder, abs_location+folder)
+		slot.set_to(folder, abs_location.path_join(folder))
 		i += 1
 	for file in files:
 		var slot = grid.get_child(i)
-		slot.set_to(file, abs_location+file)
+		slot.set_to(file, abs_location.path_join(file))
 		i += 1
 		
 	view_apply()
