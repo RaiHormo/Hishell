@@ -56,7 +56,7 @@ static func move(location: String, to: String) -> void:
 static func copy(location: String, to: String, overwrite := false, new_name := just_the_name(location)) -> Error:
 	location = abs_path(location)
 	to = abs_path(to)
-	if (location == to or location.get_base_dir() == to): 
+	if (location == to or location.get_base_dir() == to.trim_suffix('/')): 
 		return ERR_ALREADY_EXISTS
 	if not exists(to): 
 		DirAccess.make_dir_recursive_absolute(to)
