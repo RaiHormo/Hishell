@@ -2,7 +2,7 @@ name: Deploy Godot to Cloudflare Pages
 
 on:
   push:
-    branches: [ "main" ] # Change if your main branch is named differently
+    branches: [ "main" ]
 
 jobs:
   deploy:
@@ -15,22 +15,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Gzip WASM and Create Headers
+      - name: Upload WASM to R2
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler r2 object put hishell-assets/index.wasm --file export/web/index.wasm --content-type application/wasm
+
+      - name: Remove WASM from build output
+        run: rm export/web/index.wasm
+
+      - name: Create Headers
         run: |
           cd export/web
-
-          # Compress the wasm file and keep the original name
-          gzip -9 -c index.wasm > index.wasm.gz
-          mv index.wasm.gz index.wasm
-
-          # Generate the correct _headers file
           cat << 'EOF' > _headers
-          /index.wasm
-            Content-Encoding: gzip
-            Content-Type: application/wasm
-            Cross-Origin-Opener-Policy: same-origin
-            Cross-Origin-Embedder-Policy: require-corp
-
           /*
             Cross-Origin-Opener-Policy: same-origin
             Cross-Origin-Embedder-Policy: require-corp
@@ -41,5 +38,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          # This command tells wrangler to deploy specifically to Pages
           command: pages deploy export/web --project-name=hishell
